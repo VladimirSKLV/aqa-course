@@ -1,0 +1,19 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local app data
+*.log

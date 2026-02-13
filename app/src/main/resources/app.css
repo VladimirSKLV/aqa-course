@@ -1,0 +1,40 @@
+.root {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 14px;
+}
+
+.h1 { -fx-font-size: 26px; -fx-font-weight: 700; }
+.h2 { -fx-font-size: 20px; -fx-font-weight: 700; }
+
+.muted { -fx-text-fill: #555; }
+
+.card {
+    -fx-background-color: white;
+    -fx-border-color: #e3e3e3;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 18px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 20, 0.15, 0, 4);
+}
+
+.button {
+    -fx-padding: 10px 14px;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+}
+
+.button.primary { -fx-background-color: #1b6ef3; -fx-text-fill: white; }
+.button.secondary { -fx-background-color: #f0f2f5; -fx-text-fill: #111; }
+
+.error { -fx-text-fill: #b00020; -fx-font-weight: 600; }
+.success { -fx-text-fill: #0b6b2a; -fx-font-weight: 600; }
+
+.q-title { -fx-font-weight: 700; }
+
+.q-block {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e6e6e6;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 12px;
+}

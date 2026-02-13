@@ -1,0 +1,15 @@
+plugins {
+    `java-library`
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+dependencies {
+    api("com.fasterxml.jackson.core:jackson-databind:2.17.2")
+    api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
+}
