@@ -1,0 +1,16 @@
+id: "java-002"
+language: "JAVA"
+track: "BEGINNER"
+order: 2
+title: "Условия, boolean и сравнения (if/else)"
+theory:
+  markdown: "lessons/java/002/theory.md"
+assignment:
+  type: "code"
+  runner: "JAVA"
+  fileName: "Main.java"
+  mainClass: "Main"
+  template: "lessons/java/002/template/Main.java"
+  expectedStdout: |
+    ADULT? false
+    ADULT? true

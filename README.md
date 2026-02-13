@@ -71,3 +71,18 @@
 - Реализовать `code`-ДЗ: шаблоны файлов + скрытые JUnit-тесты-валидаторы в sandbox.
 - Добавить терминал для stdout/stderr выполнения.
 - Добавить редактор кода (Monaco в WebView или RichTextFX).
+
+
+## Важно про запуск JAR (JavaFX)
+
+Если при `java -jar ...` вы видите ошибку `JavaFX runtime components are missing`, значит JavaFX зависимости не попали в classpath/uber-jar. В модуле `app` уже добавлены platform-specific JavaFX runtime зависимости (win/linux/mac). Пересоберите:
+
+```bash
+gradle :app:shadowJar
+```
+
+И запускайте:
+
+```bash
+java -jar app/build/libs/aqa-course-app-all.jar
+```

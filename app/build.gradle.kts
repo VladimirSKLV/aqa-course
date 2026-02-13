@@ -1,15 +1,5 @@
 import org.gradle.internal.os.OperatingSystem
 
-buildscript {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath("org.beryx:badass-runtime-plugin:2.0.1")
-    }
-}
-
 plugins {
     application
     java
@@ -25,7 +15,7 @@ java {
 }
 
 application {
-    mainClass.set("ru.sobol.course.app.Launcher")
+    mainClass.set("ru.vlsklv.course.app.Launcher")
 }
 
 javafx {
@@ -51,13 +41,24 @@ dependencies {
     runtimeOnly("org.openjfx:javafx-graphics:${javafx.version}:$javafxPlatform")
     runtimeOnly("org.openjfx:javafx-controls:${javafx.version}:$javafxPlatform")
     runtimeOnly("org.openjfx:javafx-web:${javafx.version}:$javafxPlatform")
-
 }
 
 runtime {
     distDir = file("$buildDir/install/${project.name}-shadow")
 
     options.set(listOf("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages"))
+
+    modules.set(
+        listOf(
+            "java.desktop",
+            "java.logging",
+            "java.xml",
+            "java.naming",
+            "java.net.http",
+            "java.compiler",
+            "jdk.compiler"
+        )
+    )
 
     jpackage {
         mainJar = "app-all.jar"
@@ -67,10 +68,10 @@ runtime {
         installerName = "AQA-Course"
         appVersion = project.version.toString()
 
-        imageOptions = listOf("--vendor", "Sobol")
+        imageOptions = listOf("--vendor", "VlSKLV")
 
         installerType = "exe"
-        installerOptions = listOf("--vendor", "Sobol", "--win-menu", "--win-shortcut")
+        installerOptions = listOf("--vendor", "VlSKLV", "--win-menu", "--win-shortcut")
     }
 }
 
@@ -81,9 +82,8 @@ tasks.named("jpackage") { dependsOn("installShadowDist") }
 tasks.shadowJar {
     configurations = listOf(project.configurations.runtimeClasspath.get())
     isZip64 = true
-    manifest {
-        attributes["Main-Class"] = application.mainClass.get()
-    }
+    manifest { attributes["Main-Class"] = application.mainClass.get() }
+
     archiveBaseName.set(project.name)
     archiveClassifier.set("all")
     archiveVersion.set("")

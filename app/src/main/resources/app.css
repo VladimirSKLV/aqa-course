@@ -38,3 +38,50 @@
     -fx-background-radius: 10px;
     -fx-padding: 12px;
 }
+
+/* Разбор теста */
+.opt-row {
+    -fx-padding: 8px 10px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: transparent;
+}
+
+.opt-selected-correct {
+    -fx-background-color: rgba(11, 107, 42, 0.12);
+    -fx-border-color: rgba(11, 107, 42, 0.35);
+}
+
+.opt-selected-wrong {
+    -fx-background-color: rgba(176, 0, 32, 0.10);
+    -fx-border-color: rgba(176, 0, 32, 0.35);
+}
+
+.opt-missed-correct {
+    -fx-background-color: rgba(27, 110, 243, 0.10);
+    -fx-border-color: rgba(27, 110, 243, 0.35);
+}
+
+.opt-expl {
+    -fx-text-fill: #333;
+    -fx-font-size: 13px;
+}
+
+.opt-expl-wrong {
+    -fx-text-fill: #b00020;
+}
+
+/* Code homework */
+.code-editor {
+    -fx-font-family: "Consolas", "Roboto Mono", "Courier New", monospace;
+    -fx-font-size: 13px;
+}
+
+.terminal {
+    -fx-font-family: "Consolas", "Roboto Mono", "Courier New", monospace;
+    -fx-font-size: 12.5px;
+    -fx-control-inner-background: #0f172a; /* dark */
+    -fx-text-fill: #e2e8f0;
+    -fx-highlight-fill: rgba(255,255,255,0.15);
+    -fx-highlight-text-fill: #e2e8f0;
+}
