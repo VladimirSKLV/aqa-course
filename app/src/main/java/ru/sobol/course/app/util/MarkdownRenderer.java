@@ -1,4 +1,3 @@
-\
 package ru.sobol.course.app.util;
 
 import com.vladsch.flexmark.ext.tables.TablesExtension;
