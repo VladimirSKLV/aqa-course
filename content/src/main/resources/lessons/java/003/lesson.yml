@@ -1,0 +1,86 @@
+id: "java-003"
+language: "JAVA"
+track: "BEGINNER"
+order: 3
+title: "Условия, циклы и методы: управляющая логика автотестов"
+theory:
+  markdown: "lessons/java/003/theory.md"
+
+assignment:
+  type: "composite"
+  steps:
+    - type: "quiz"
+      passPercent: 80
+      questions:
+        - text: "Почему в Java нельзя надёжно сравнивать строки через == ?"
+          options:
+            - text: "== сравнивает ссылки, а equals() — содержимое строк"
+              correct: true
+              explanation: "В тестах сравнивайте строки через equals/equalsIgnoreCase, иначе проверки будут нестабильны."
+            - text: "Потому что String нельзя сравнивать"
+              correct: false
+              explanation: "Строки сравниваются, но нужно использовать equals()."
+            - text: "Потому что == работает только для int"
+              correct: false
+              explanation: "== работает и для ссылок, но сравнивает именно ссылки."
+
+        - text: "Как правильно проверить «статус в диапазоне 200..299»?"
+          options:
+            - text: "status >= 200 && status < 300"
+              correct: true
+              explanation: "Это стандартная проверка 2xx."
+            - text: "status > 200 || status < 299"
+              correct: false
+              explanation: "Это условие почти всегда true. Нужен AND, а не OR."
+            - text: "status == 2xx"
+              correct: false
+              explanation: "В Java нет литерала 2xx. Проверяют диапазон."
+
+        - text: "Что делает break внутри цикла?"
+          options:
+            - text: "Немедленно выходит из цикла"
+              correct: true
+              explanation: "Удобно, когда нашли нужный элемент и дальше идти не нужно."
+            - text: "Переходит к следующей итерации"
+              correct: false
+              explanation: "Это continue."
+            - text: "Останавливает программу"
+              correct: false
+              explanation: "Останавливает только цикл, не программу."
+
+        - text: "Какая типичная ошибка в циклах приводит к падениям/пропускам проверок?"
+          options:
+            - text: "Off-by-one (неверная граница: i <= n вместо i < n)"
+              correct: true
+              explanation: "Часто приводит к ArrayIndexOutOfBoundsException или пропуску последнего элемента."
+            - text: "Использование for-each"
+              correct: false
+              explanation: "for-each корректен, если индекс не нужен."
+            - text: "Наличие переменной i"
+              correct: false
+              explanation: "Переменная i сама по себе не проблема."
+
+        - text: "Зачем выносить повторяющуюся логику в методы в автотестах?"
+          options:
+            - text: "Чтобы уменьшить дублирование и сделать проверки переиспользуемыми"
+              correct: true
+              explanation: "Это упрощает поддержку и снижает риск расхождения логики между тестами."
+            - text: "Чтобы код компилировался быстрее"
+              correct: false
+              explanation: "Это не ключевая причина. Важнее читаемость и поддерживаемость."
+            - text: "Потому что без методов нельзя писать тесты"
+              correct: false
+              explanation: "Можно, но получится много копипаста."
+
+    - type: "code"
+      fileName: "Main.java"
+      mainClass: "Main"
+      template: "lessons/java/003/Main.java"
+      expectedStdout: |
+        OK: 200
+        OK: 201
+        FAIL: 404
+        OK: 204
+        FAIL: 500
+        OK_COUNT=3
+        FAIL_COUNT=2

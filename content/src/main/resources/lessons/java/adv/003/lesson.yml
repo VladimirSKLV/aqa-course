@@ -1,0 +1,82 @@
+id: "java-adv-003"
+language: "JAVA"
+track: "ADVANCED"
+order: 3
+title: "Коллекции, Stream API и Optional: проверки списков из API"
+theory:
+  markdown: "lessons/java/adv/003/theory.md"
+
+assignment:
+  type: "composite"
+  steps:
+    - type: "quiz"
+      passPercent: 80
+      questions:
+        - text: "Почему для стабильного сравнения вывода/отчёта нельзя полагаться на порядок HashSet/HashMap?"
+          options:
+            - text: "Hash* не гарантируют порядок; нужен сортировщик или LinkedHash*"
+              correct: true
+              explanation: "Иначе тесты будут флапать при разном порядке обхода."
+            - text: "Потому что HashMap не хранит значения"
+              correct: false
+              explanation: "Хранит значения, но порядок не фиксирован."
+            - text: "Потому что Stream API не работает с HashMap"
+              correct: false
+              explanation: "Работает, но порядок зависит от структуры."
+
+        - text: "Что вернёт findFirst(), если элемент не найден?"
+          options:
+            - text: "Optional.empty()"
+              correct: true
+              explanation: "Дальше применяют orElse/orElseThrow."
+            - text: "null"
+              correct: false
+              explanation: "findFirst возвращает Optional."
+            - text: "Кинет исключение сразу"
+              correct: false
+              explanation: "Исключение будет только если вызвать get() без проверки."
+
+        - text: "Как корректно посчитать сумму BigDecimal по списку?"
+          options:
+            - text: "reduce(BigDecimal.ZERO, BigDecimal::add)"
+              correct: true
+              explanation: "Это стандартная агрегация BigDecimal в Stream."
+            - text: "sum()"
+              correct: false
+              explanation: "sum() есть для примитивов (IntStream/LongStream/DoubleStream)."
+            - text: "+= как для double"
+              correct: false
+              explanation: "BigDecimal неизменяемый; нужен add()."
+
+        - text: "Как правильно получить значение из Optional в тесте, если отсутствие — это ошибка?"
+          options:
+            - text: "orElseThrow(() -> new AssertionError(...))"
+              correct: true
+              explanation: "Это даёт контролируемое и понятное сообщение."
+            - text: "get()"
+              correct: false
+              explanation: "get() без проверки даёт NoSuchElementException с плохим сообщением."
+            - text: "orElse(null)"
+              correct: false
+              explanation: "Это возвращает null и дальше вы получите NPE."
+
+        - text: "Что делает groupingBy в Stream?"
+          options:
+            - text: "Группирует элементы по ключу и возвращает Map<key, List<elem>>"
+              correct: true
+              explanation: "Это удобно для отчётов и проверок распределений."
+            - text: "Сортирует список"
+              correct: false
+              explanation: "Сортировка — это sorted()."
+            - text: "Удаляет дубликаты"
+              correct: false
+              explanation: "Дубликаты убирает distinct() или Set."
+
+    - type: "code"
+      fileName: "Main.java"
+      mainClass: "Main"
+      template: "lessons/java/adv/003/Main.java"
+      expectedStdout: |
+        PAID_TOTAL=17.75
+        TAGS=android,api,regression,smoke,web
+        FIRST_FAILED=A-103

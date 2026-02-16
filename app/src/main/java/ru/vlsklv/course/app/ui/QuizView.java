@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class QuizView {
     private final Navigator nav;
@@ -52,11 +53,13 @@ public class QuizView {
 
         List<QuestionBlock> blocks = new ArrayList<>();
         int i = 1;
-        for (QuizQuestion q : quiz.getQuestions()) {
-            QuestionBlock qb = new QuestionBlock(i, q);
-            blocks.add(qb);
-            questionsBox.getChildren().add(qb.root);
-            i++;
+        if (quiz.getQuestions() != null) {
+            for (QuizQuestion q : quiz.getQuestions()) {
+                QuestionBlock qb = new QuestionBlock(i, q);
+                blocks.add(qb);
+                questionsBox.getChildren().add(qb.root);
+                i++;
+            }
         }
 
         ScrollPane scroll = new ScrollPane(questionsBox);
@@ -81,6 +84,7 @@ public class QuizView {
             int percent = total == 0 ? 0 : (int) Math.round((correctCount * 100.0) / total);
             boolean pass = percent >= quiz.getPassPercent();
 
+            // Показать разбор по каждому вопросу
             for (QuestionBlock qb : blocks) qb.showReview();
             for (QuestionBlock qb : blocks) qb.lock();
             check.setDisable(true);
@@ -119,14 +123,16 @@ public class QuizView {
         private final VBox root;
         private final ToggleGroup group = new ToggleGroup();
         private final List<OptionRow> options = new ArrayList<>();
+        private final Label feedback;
 
         private QuestionBlock(int number, QuizQuestion q) {
-            Label qLabel = new Label(number + ") " + q.getText());
+            Label qLabel = new Label(number + ") " + (q.getText() == null ? "" : q.getText()));
             qLabel.getStyleClass().add("q-title");
             qLabel.setWrapText(true);
 
-            List<QuizOption> shuffled = new ArrayList<>(q.getOptions());
-            Collections.shuffle(shuffled);
+            // Перемешиваем варианты: каждый раз при открытии экрана будет новый порядок
+            List<QuizOption> shuffled = new ArrayList<>(q.getOptions() == null ? List.of() : q.getOptions());
+            Collections.shuffle(shuffled, ThreadLocalRandom.current());
 
             VBox optsBox = new VBox(6);
             for (QuizOption o : shuffled) {
@@ -135,7 +141,13 @@ public class QuizView {
                 optsBox.getChildren().add(row.root);
             }
 
-            root = new VBox(10, qLabel, optsBox);
+            feedback = new Label("");
+            feedback.getStyleClass().add("muted");
+            feedback.setWrapText(true);
+            feedback.setVisible(false);
+            feedback.setManaged(false);
+
+            root = new VBox(10, qLabel, optsBox, feedback);
             root.getStyleClass().add("q-block");
         }
 
@@ -154,36 +166,63 @@ public class QuizView {
                 if (ud instanceof QuizOption o) selected = o;
             }
 
-            QuizOption correct = null;
+            List<QuizOption> corrects = new ArrayList<>();
             for (OptionRow r : options) {
-                if (r.option.isCorrect()) { correct = r.option; break; }
+                if (r.option.isCorrect()) corrects.add(r.option);
             }
+            QuizOption correct = corrects.isEmpty() ? null : corrects.get(0);
 
+            // Сброс стилей/текста
+            for (OptionRow r : options) r.clearReviewStyles();
+            feedback.setText("");
+            feedback.setVisible(false);
+            feedback.setManaged(false);
+
+            // Визуальная разметка + объяснения
             for (OptionRow r : options) {
-                r.clearReviewStyles();
-
                 boolean isSelected = selected != null && r.option == selected;
                 boolean isCorrect = r.option.isCorrect();
 
-                if (isSelected && isCorrect) r.markSelectedCorrect();
-                else if (isSelected) r.markSelectedWrong();
-                else if (isCorrect) r.markMissedCorrect();
-
-                boolean showExplanation;
-                if (selected == null) {
-                    showExplanation = isCorrect;
+                if (isSelected && isCorrect) {
+                    r.markSelectedCorrect();
+                    r.showExplanation(true, "✅ ");
                 } else if (isSelected) {
-                    showExplanation = true;
-                } else {
-                    showExplanation = (!Objects.equals(selected, correct) && isCorrect);
+                    r.markSelectedWrong();
+                    r.showExplanation(true, "❌ ");
+                } else if (isCorrect) {
+                    r.markMissedCorrect();
+                    // показываем объяснение правильного варианта всегда (чтобы было понятно "почему правильно")
+                    r.showExplanation(true, "✅ ");
                 }
+            }
 
-                if (showExplanation) r.showExplanation(isSelected && !isCorrect);
+            // Фидбек под вопросом (коротко и ясно)
+            if (selected == null) {
+                String correctText = correct == null ? "—" : safe(correct.getText());
+                feedback.setText("Ответ не выбран. Правильный вариант: " + correctText);
+                feedback.setVisible(true);
+                feedback.setManaged(true);
+                return;
+            }
+
+            if (selected.isCorrect()) {
+                feedback.setText("Верно.");
+                feedback.setVisible(true);
+                feedback.setManaged(true);
+            } else {
+                String correctText = correct == null ? "—" : safe(correct.getText());
+                feedback.setText("Неверно. Правильный вариант: " + correctText);
+                feedback.setVisible(true);
+                feedback.setManaged(true);
             }
         }
 
         private void lock() {
             for (OptionRow r : options) r.lock();
+        }
+
+        private static String safe(String s) {
+            return s == null ? "" : s;
         }
     }
 
@@ -220,7 +259,8 @@ public class QuizView {
         }
 
         private void markSelectedCorrect() {
-            if (!root.getStyleClass().contains("opt-selected-correct")) root.getStyleClass().add("opt-selected-correct");
+            if (!root.getStyleClass().contains("opt-selected-correct"))
+                root.getStyleClass().add("opt-selected-correct");
         }
 
         private void markSelectedWrong() {
@@ -231,15 +271,27 @@ public class QuizView {
             if (!root.getStyleClass().contains("opt-missed-correct")) root.getStyleClass().add("opt-missed-correct");
         }
 
-        private void showExplanation(boolean wrongSelected) {
+        /**
+         * Показываем объяснение:
+         * - для correct=true: почему это правильный ответ
+         * - для correct=false: почему неверный/в чём подвох
+         */
+        private void showExplanation(boolean visible, String prefix) {
+            if (!visible) return;
+
             String text = option.getExplanation();
             if (text == null || text.isBlank()) {
-                text = option.isCorrect() ? "Правильный ответ." : "Неверный вариант.";
+                text = option.isCorrect()
+                        ? "Правильный ответ."
+                        : "Неверный вариант.";
             }
-            explanation.setText(text);
-            if (wrongSelected && !explanation.getStyleClass().contains("opt-expl-wrong")) {
+
+            // Для неверного выбранного — подсветим объяснение как "wrong"
+            if (!option.isCorrect() && !explanation.getStyleClass().contains("opt-expl-wrong")) {
                 explanation.getStyleClass().add("opt-expl-wrong");
             }
+
+            explanation.setText((prefix == null ? "" : prefix) + text);
             explanation.setVisible(true);
             explanation.setManaged(true);
         }

@@ -3,3 +3,5 @@ lessons:
   - path: "lessons/java/adv/001/lesson.yml"
   - path: "lessons/java/002/lesson.yml"
   - path: "lessons/java/adv/002/lesson.yml"
+  - path: "lessons/java/003/lesson.yml"
+  - path: "lessons/java/adv/003/lesson.yml"

@@ -184,6 +184,11 @@ public class Navigator {
             return;
         }
 
+        if (lesson.getAssignment() instanceof CompositeAssignment) {
+            root.setCenter(new CompositeHomeworkView(this, lessonId).view());
+            return;
+        }
+
         showQuiz(lessonId);
     }
 

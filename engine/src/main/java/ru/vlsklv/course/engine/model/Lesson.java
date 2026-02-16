@@ -15,7 +15,8 @@ public class Lesson {
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     @JsonSubTypes({
             @JsonSubTypes.Type(value = QuizAssignment.class, name = "quiz"),
-            @JsonSubTypes.Type(value = CodeAssignment.class, name = "code")
+            @JsonSubTypes.Type(value = CodeAssignment.class, name = "code"),
+            @JsonSubTypes.Type(value = CompositeAssignment.class, name = "composite")
     })
     private Assignment assignment;
 
