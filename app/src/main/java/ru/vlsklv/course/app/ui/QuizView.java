@@ -3,22 +3,15 @@ package ru.vlsklv.course.app.ui;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import ru.vlsklv.course.engine.model.CourseTrack;
-import ru.vlsklv.course.engine.model.Lesson;
-import ru.vlsklv.course.engine.model.QuizAssignment;
-import ru.vlsklv.course.engine.model.QuizOption;
-import ru.vlsklv.course.engine.model.QuizQuestion;
+import ru.vlsklv.course.app.ui.kit.AppButton;
+import ru.vlsklv.course.engine.model.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,7 +41,7 @@ public class QuizView {
             return p;
         }
 
-        Label title = new Label("Домашнее задание: тест");
+        Label title = new Label("🧩 Домашнее задание: тест");
         title.getStyleClass().add("h2");
 
         Label subtitle = new Label("Порог прохождения: " + quiz.getPassPercent() + "%");
@@ -70,56 +63,42 @@ public class QuizView {
         scroll.setFitToWidth(true);
 
         Label result = new Label("");
-        result.getStyleClass().add("muted");
+        result.getStyleClass().addAll("status-bar", "muted");
         result.setWrapText(true);
 
-        Button back = new Button("Назад к теории");
-        back.getStyleClass().add("secondary");
-        back.setOnAction(e -> nav.showLesson(lessonId));
-
-        Button check = new Button("Проверить");
-        check.getStyleClass().add("primary");
+        var back = AppButton.secondary("← Назад к теории", e -> nav.showLesson(lessonId));
+        var check = AppButton.primary("✅ Проверить", null);
+        var toList = AppButton.ghost("📚 К списку уроков", e -> nav.showLessonList());
 
         check.setOnAction(e -> {
             int total = blocks.size();
             int correctCount = 0;
 
             for (QuestionBlock qb : blocks) {
-                boolean correct = qb.isAnsweredCorrectly();
-                if (correct) correctCount++;
+                if (qb.isAnsweredCorrectly()) correctCount++;
             }
 
             int percent = total == 0 ? 0 : (int) Math.round((correctCount * 100.0) / total);
             boolean pass = percent >= quiz.getPassPercent();
 
-            // Показываем разбор по каждому вопросу
-            for (QuestionBlock qb : blocks) {
-                qb.showReview();
-            }
-
-            // Блокируем изменение ответов после проверки (чтобы разбор был понятнее)
-            for (QuestionBlock qb : blocks) {
-                qb.lock();
-            }
+            for (QuestionBlock qb : blocks) qb.showReview();
+            for (QuestionBlock qb : blocks) qb.lock();
             check.setDisable(true);
 
             if (pass) {
                 CourseTrack track = Objects.requireNonNull(nav.selectedTrack(), "selectedTrack");
                 nav.progress().markCompleted(lesson.getLanguage(), track, lesson.getId());
                 nav.saveProgress();
-                result.getStyleClass().removeAll("error");
+
+                result.getStyleClass().removeAll("error", "muted");
                 if (!result.getStyleClass().contains("success")) result.getStyleClass().add("success");
-                result.setText("Результат: " + percent + "% (" + correctCount + "/" + total + "). Тест пройден. Следующий урок (если он существует) станет доступен.");
+                result.setText("Результат: " + percent + "% (" + correctCount + "/" + total + "). Тест пройден. Следующий урок станет доступен.");
             } else {
-                result.getStyleClass().removeAll("success");
+                result.getStyleClass().removeAll("success", "muted");
                 if (!result.getStyleClass().contains("error")) result.getStyleClass().add("error");
-                result.setText("Результат: " + percent + "% (" + correctCount + "/" + total + "). Недостаточно. Нужно минимум " + quiz.getPassPercent() + "%." );
+                result.setText("Результат: " + percent + "% (" + correctCount + "/" + total + "). Недостаточно. Нужно минимум " + quiz.getPassPercent() + "%.");
             }
         });
-
-        Button toList = new Button("К списку уроков");
-        toList.getStyleClass().add("secondary");
-        toList.setOnAction(e -> nav.showLessonList());
 
         HBox actions = new HBox(12, back, check, toList);
         actions.setAlignment(Pos.CENTER_RIGHT);
@@ -146,14 +125,17 @@ public class QuizView {
             qLabel.getStyleClass().add("q-title");
             qLabel.setWrapText(true);
 
+            List<QuizOption> shuffled = new ArrayList<>(q.getOptions());
+            Collections.shuffle(shuffled);
+
             VBox optsBox = new VBox(6);
-            for (QuizOption o : q.getOptions()) {
+            for (QuizOption o : shuffled) {
                 OptionRow row = new OptionRow(o, group);
                 options.add(row);
                 optsBox.getChildren().add(row.root);
             }
 
-            root = new VBox(8, qLabel, optsBox);
+            root = new VBox(10, qLabel, optsBox);
             root.getStyleClass().add("q-block");
         }
 
@@ -174,10 +156,7 @@ public class QuizView {
 
             QuizOption correct = null;
             for (OptionRow r : options) {
-                if (r.option.isCorrect()) {
-                    correct = r.option;
-                    break;
-                }
+                if (r.option.isCorrect()) { correct = r.option; break; }
             }
 
             for (OptionRow r : options) {
@@ -186,39 +165,25 @@ public class QuizView {
                 boolean isSelected = selected != null && r.option == selected;
                 boolean isCorrect = r.option.isCorrect();
 
-                // Подсветка
-                if (isSelected && isCorrect) {
-                    r.markSelectedCorrect();
-                } else if (isSelected) {
-                    r.markSelectedWrong();
-                } else if (isCorrect) {
-                    // правильный ответ, который пользователь не выбрал
-                    r.markMissedCorrect();
-                }
+                if (isSelected && isCorrect) r.markSelectedCorrect();
+                else if (isSelected) r.markSelectedWrong();
+                else if (isCorrect) r.markMissedCorrect();
 
-                // Объяснение
-                boolean showExplanation = false;
+                boolean showExplanation;
                 if (selected == null) {
-                    // ничего не выбрал: показываем объяснение правильного
                     showExplanation = isCorrect;
                 } else if (isSelected) {
-                    // выбранный вариант: показываем объяснение
                     showExplanation = true;
-                } else if (!Objects.equals(selected, correct) && isCorrect) {
-                    // выбран неверно: показываем объяснение правильного
-                    showExplanation = true;
+                } else {
+                    showExplanation = (!Objects.equals(selected, correct) && isCorrect);
                 }
 
-                if (showExplanation) {
-                    r.showExplanation(isSelected && !isCorrect);
-                }
+                if (showExplanation) r.showExplanation(isSelected && !isCorrect);
             }
         }
 
         private void lock() {
-            for (OptionRow r : options) {
-                r.lock();
-            }
+            for (OptionRow r : options) r.lock();
         }
     }
 
@@ -242,7 +207,7 @@ public class QuizView {
             this.explanation.setVisible(false);
             this.explanation.setManaged(false);
 
-            this.root = new VBox(4, radio, explanation);
+            this.root = new VBox(6, radio, explanation);
             this.root.getStyleClass().add("opt-row");
         }
 
@@ -269,9 +234,7 @@ public class QuizView {
         private void showExplanation(boolean wrongSelected) {
             String text = option.getExplanation();
             if (text == null || text.isBlank()) {
-                text = option.isCorrect()
-                        ? "Правильный ответ."
-                        : "Неверный вариант.";
+                text = option.isCorrect() ? "Правильный ответ." : "Неверный вариант.";
             }
             explanation.setText(text);
             if (wrongSelected && !explanation.getStyleClass().contains("opt-expl-wrong")) {

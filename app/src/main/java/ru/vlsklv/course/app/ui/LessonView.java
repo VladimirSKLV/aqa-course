@@ -3,11 +3,11 @@ package ru.vlsklv.course.app.ui;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.web.WebView;
+import ru.vlsklv.course.app.ui.kit.AppButton;
 import ru.vlsklv.course.app.util.MarkdownRenderer;
 import ru.vlsklv.course.engine.model.Lesson;
 
@@ -42,13 +42,8 @@ public class LessonView {
         WebView web = new WebView();
         web.getEngine().loadContent(html);
 
-        Button back = new Button("К списку уроков");
-        back.getStyleClass().add("secondary");
-        back.setOnAction(e -> nav.showLessonList());
-
-        Button hw = new Button("Домашнее задание");
-        hw.getStyleClass().add("primary");
-        hw.setOnAction(e -> nav.showHomework(lessonId));
+        var back = AppButton.secondary("К списку уроков", e -> nav.showLessonList());
+        var hw = AppButton.primary("Домашнее задание", e -> nav.showHomework(lessonId));
 
         HBox actions = new HBox(12, back, hw);
         actions.setAlignment(Pos.CENTER_RIGHT);

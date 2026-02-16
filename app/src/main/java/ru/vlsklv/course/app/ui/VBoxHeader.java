@@ -16,6 +16,7 @@ public class VBoxHeader {
 
     public Parent view() {
         VBox v = new VBox(6, title, subtitle);
+        v.getStyleClass().add("page-header");
         v.setPadding(new Insets(0, 0, 12, 0));
         return v;
     }

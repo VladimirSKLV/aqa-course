@@ -1,31 +1,29 @@
 package ru.vlsklv.course.app.ui;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import ru.vlsklv.course.app.sandbox.JavaSandboxRunner;
+import ru.vlsklv.course.app.ui.kit.AppButton;
+import ru.vlsklv.course.app.ui.kit.AppPanel;
+import ru.vlsklv.course.app.ui.kit.CodeUi;
 import ru.vlsklv.course.engine.model.CodeAssignment;
 import ru.vlsklv.course.engine.model.CourseTrack;
 import ru.vlsklv.course.engine.model.Lesson;
 
-import java.time.Duration;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
-/**
- * Экран домашнего задания типа "code".
- *
- * MVP-реализация:
- * - редактор: обычный TextArea с моноширинным шрифтом
- * - запуск: компиляция + выполнение main-класса, вывод в "терминал"
- * - проверка: сравнение stdout с expectedStdout из задания
- */
 public class CodeAssignmentView {
     private final Navigator nav;
     private final String lessonId;
@@ -55,133 +53,181 @@ public class CodeAssignmentView {
         Label title = new Label("Домашнее задание: код");
         title.getStyleClass().add("h2");
 
-        Label subtitle = new Label("Напишите/дополните код и нажмите \"Проверить\".");
+        Label subtitle = new Label("Напишите/дополните код и нажмите \"Проверить\". Подсказки: Ctrl+Space. Принятие: Tab/Enter.");
         subtitle.getStyleClass().add("muted");
+        subtitle.setWrapText(true);
 
         String template = ca.getTemplate() == null ? null : nav.loader().readResourceText(ca.getTemplate());
         if (template == null) template = "// Template not found\n";
 
-        TextArea editor = new TextArea(template);
-        editor.getStyleClass().add("code-editor");
-        editor.setWrapText(false);
-        editor.setPrefRowCount(24);
+        CodeUi.EditorBundle bundle = CodeUi.createJavaEditor(template);
 
-        ScrollPane editorScroll = new ScrollPane(editor);
-        editorScroll.setFitToWidth(true);
-        editorScroll.setFitToHeight(true);
+        Label editorTitle = new Label("Редактор");
+        editorTitle.getStyleClass().add("panel-title");
+
+        AppPanel editorPanel = new AppPanel(editorTitle, bundle.scroll());
+        AppPanel.grow(bundle.scroll());
 
         Label termTitle = new Label("Вывод (терминал)");
-        termTitle.getStyleClass().add("q-title");
+        termTitle.getStyleClass().add("panel-title");
 
         TextArea terminal = new TextArea();
         terminal.getStyleClass().add("terminal");
         terminal.setEditable(false);
         terminal.setWrapText(true);
-        terminal.setPrefRowCount(10);
 
-        Label result = new Label("");
-        result.getStyleClass().add("muted");
-        result.setWrapText(true);
+        AppPanel terminalPanel = new AppPanel(termTitle, terminal);
+        VBox.setVgrow(terminal, Priority.ALWAYS);
+
+        Label status = new Label("");
+        status.getStyleClass().addAll("status-bar", "muted");
+        status.setWrapText(true);
 
         JavaSandboxRunner runner = new JavaSandboxRunner();
 
-        Button back = new Button("Назад к теории");
-        back.getStyleClass().add("secondary");
-        back.setOnAction(e -> nav.showLesson(lessonId));
+        var back = AppButton.secondary("Назад к теории", e -> nav.showLesson(lessonId));
+        var toList = AppButton.ghost("К списку уроков", e -> nav.showLessonList());
 
-        Button run = new Button("Запустить");
-        run.getStyleClass().add("secondary");
+        var run = AppButton.secondary("Запустить", null);
+        var check = AppButton.primary("Проверить", null);
 
-        Button check = new Button("Проверить");
-        check.getStyleClass().add("primary");
+        SplitPane split = new SplitPane();
+        split.setOrientation(Orientation.VERTICAL);
+        split.getItems().addAll(editorPanel, terminalPanel);
+        split.setDividerPositions(0.72);
 
-        java.util.function.Supplier<JavaSandboxRunner.RunResult> doRun = () -> {
-            terminal.clear();
-            result.getStyleClass().removeAll("error", "success");
-            result.getStyleClass().add("muted");
-            result.setText("");
-
-            JavaSandboxRunner.RunResult rr = runner.compileAndRun(
-                    ca.getFileName(),
-                    ca.getMainClass(),
-                    editor.getText(),
-                    Duration.ofSeconds(5)
-            );
-
-            if (rr.getStatus() == JavaSandboxRunner.RunResult.Status.OK) {
-                terminal.appendText(rr.getStdout());
-                if (rr.getStderr() != null && !rr.getStderr().isBlank()) {
-                    terminal.appendText("\n[stderr]\n" + rr.getStderr());
-                }
-            } else {
-                terminal.appendText(rr.getMessage());
-            }
-
-            return rr;
+        Runnable resetStatus = () -> {
+            status.getStyleClass().removeAll("error", "success");
+            if (!status.getStyleClass().contains("muted")) status.getStyleClass().add("muted");
+            status.setText("");
         };
 
-        run.setOnAction(e -> doRun.get());
+        Runnable setRunning = () -> {
+            status.getStyleClass().removeAll("error", "success");
+            if (!status.getStyleClass().contains("muted")) status.getStyleClass().add("muted");
+            status.setText("Запуск...");
+        };
 
-        check.setOnAction(e -> {
-            JavaSandboxRunner.RunResult rr = doRun.get();
-            if (rr.getStatus() != JavaSandboxRunner.RunResult.Status.OK) {
-                result.getStyleClass().removeAll("muted");
-                result.getStyleClass().add("error");
-                result.setText("Код не прошёл компиляцию/запуск. Исправьте ошибки в терминале и повторите проверку.");
-                return;
+        var doAsyncRun = new BiConsumer<Boolean, JavaSandboxRunner.RunResult>() {
+            @Override
+            public void accept(Boolean checkMode, JavaSandboxRunner.RunResult rr) {
+                // не используется
             }
+        };
 
-            String expected = ca.getExpectedStdout();
-            if (expected == null || expected.isBlank()) {
-                result.getStyleClass().removeAll("muted");
-                result.getStyleClass().add("success");
-                result.setText("Код запущен. Для этого задания не задан expectedStdout, поэтому считается пройденным при успешном запуске.");
-                markDone(lesson);
-                check.setDisable(true);
-                return;
-            }
+        BiConsumer<Boolean, Runnable> startRun = (checkMode, afterUiUnlock) -> {
+            terminal.clear();
+            resetStatus.run();
+            setRunning.run();
+            bundle.hidePopup().run();
 
-            // сравниваем только stdout
-            String actual = rr.getStdout();
-            String normExpected = normalizeForCompare(expected);
-            String normActual = normalizeForCompare(actual);
+            run.setDisable(true);
+            check.setDisable(true);
 
-            if (normExpected.equals(normActual)) {
-                result.getStyleClass().removeAll("muted");
-                result.getStyleClass().add("success");
-                result.setText("Проверка пройдена. Следующий урок (если он существует) станет доступен.");
-                markDone(lesson);
-                check.setDisable(true);
-            } else {
-                result.getStyleClass().removeAll("muted");
-                result.getStyleClass().add("error");
-                result.setText(
-                        "Проверка не пройдена. Ожидаемый вывод не совпал.\n\n" +
-                                "Ожидалось:\n" + expected + "\n\n" +
-                                "Получено:\n" + actual
-                );
-            }
-        });
+            Task<JavaSandboxRunner.RunResult> task = new Task<>() {
+                @Override
+                protected JavaSandboxRunner.RunResult call() {
+                    return runner.compileAndRun(
+                            ca.getFileName(),
+                            ca.getMainClass(),
+                            bundle.editor().getText(),
+                            java.time.Duration.ofSeconds(5)
+                    );
+                }
+            };
 
-        Button toList = new Button("К списку уроков");
-        toList.getStyleClass().add("secondary");
-        toList.setOnAction(e -> nav.showLessonList());
+            task.setOnSucceeded(ev -> {
+                JavaSandboxRunner.RunResult rr = task.getValue();
 
-        HBox actions = new HBox(12, back, run, check, toList);
+                if (rr.getStatus() == JavaSandboxRunner.RunResult.Status.OK) {
+                    terminal.appendText(rr.getStdout());
+                    if (rr.getStderr() != null && !rr.getStderr().isBlank()) {
+                        terminal.appendText("\n[stderr]\n" + rr.getStderr());
+                    }
+
+                    if (!checkMode) {
+                        status.getStyleClass().removeAll("muted", "error");
+                        if (!status.getStyleClass().contains("success")) status.getStyleClass().add("success");
+                        status.setText("Выполнено.");
+                    } else {
+                        String expected = ca.getExpectedStdout();
+                        if (expected == null || expected.isBlank()) {
+                            status.getStyleClass().removeAll("muted", "error");
+                            if (!status.getStyleClass().contains("success")) status.getStyleClass().add("success");
+                            status.setText("Код запущен. Для задания не задан expectedStdout — считается пройденным при успешном запуске.");
+                            markDone(lesson);
+                            check.setDisable(true);
+                        } else {
+                            String actual = rr.getStdout();
+                            String normExpected = normalizeForCompare(expected);
+                            String normActual = normalizeForCompare(actual);
+
+                            if (normExpected.equals(normActual)) {
+                                status.getStyleClass().removeAll("muted", "error");
+                                if (!status.getStyleClass().contains("success")) status.getStyleClass().add("success");
+                                status.setText("Проверка пройдена. Следующий урок станет доступен.");
+                                markDone(lesson);
+                                check.setDisable(true);
+                            } else {
+                                status.getStyleClass().removeAll("muted", "success");
+                                if (!status.getStyleClass().contains("error")) status.getStyleClass().add("error");
+                                status.setText(
+                                        "Проверка не пройдена. Ожидаемый вывод не совпал.\n\n" +
+                                                "Ожидалось:\n" + expected + "\n\n" +
+                                                "Получено:\n" + actual
+                                );
+                            }
+                        }
+                    }
+                } else {
+                    terminal.appendText(rr.getMessage());
+                    status.getStyleClass().removeAll("muted", "success");
+                    if (!status.getStyleClass().contains("error")) status.getStyleClass().add("error");
+                    status.setText("Код не прошёл компиляцию/запуск. Исправьте ошибки и повторите.");
+                }
+
+                run.setDisable(false);
+                if (!check.isDisabled()) check.setDisable(false);
+                if (afterUiUnlock != null) afterUiUnlock.run();
+            });
+
+            task.setOnFailed(ev -> {
+                Throwable ex = task.getException();
+                terminal.appendText(ex == null ? "Unknown error" : ex.getMessage());
+
+                status.getStyleClass().removeAll("muted", "success");
+                if (!status.getStyleClass().contains("error")) status.getStyleClass().add("error");
+                status.setText("Ошибка запуска.");
+
+                run.setDisable(false);
+                if (!check.isDisabled()) check.setDisable(false);
+                if (afterUiUnlock != null) afterUiUnlock.run();
+            });
+
+            Thread t = new Thread(task, "code-assignment-runner");
+            t.setDaemon(true);
+            t.start();
+        };
+
+        run.setOnAction(e -> startRun.accept(false, null));
+        check.setOnAction(e -> startRun.accept(true, null));
+
+        HBox actions = new HBox(12, back, toList, run, check);
         actions.setAlignment(Pos.CENTER_RIGHT);
-
-        VBox center = new VBox(12, editorScroll, termTitle, terminal);
-        center.setPadding(new Insets(12, 0, 0, 0));
 
         BorderPane pane = new BorderPane();
         pane.setPadding(new Insets(18));
         pane.setTop(new VBoxHeader(title, subtitle).view());
-        pane.setCenter(center);
+        pane.setCenter(split);
 
-        VBox bottom = new VBox(10, result, actions);
+        VBox bottom = new VBox(10, status, actions);
         bottom.setAlignment(Pos.CENTER_RIGHT);
         pane.setBottom(bottom);
         BorderPane.setMargin(bottom, new Insets(12, 0, 0, 0));
+
+        // небольшой фокус на редактор
+        Platform.runLater(bundle.editor()::requestFocus);
+
         return pane;
     }
 

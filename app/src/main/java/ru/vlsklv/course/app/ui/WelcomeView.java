@@ -3,10 +3,12 @@ package ru.vlsklv.course.app.ui;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+import ru.vlsklv.course.app.ui.kit.AppButton;
+import ru.vlsklv.course.app.ui.kit.AppCard;
 import ru.vlsklv.course.engine.model.CourseLanguage;
 
 public class WelcomeView {
@@ -17,47 +19,52 @@ public class WelcomeView {
     }
 
     public Parent view() {
-        Label title = new Label("Добро пожаловать в курс AQA по Java и Kotlin");
+        Label title = new Label("Курс AQA по Java и Kotlin");
         title.getStyleClass().add("h1");
         title.setWrapText(true);
         title.setTextAlignment(TextAlignment.CENTER);
-        title.setMaxWidth(520);
+        title.setAlignment(Pos.CENTER);
+        title.setMaxWidth(Double.MAX_VALUE);
 
-        Label subtitle = new Label("Выберите язык, затем уровень (начинающий/продвинутый). Уроки открываются последовательно.");
+        Label subtitle = new Label("Выберите язык и уровень. Уроки открываются последовательно. Есть песочница для экспериментов с кодом.");
         subtitle.getStyleClass().add("muted");
         subtitle.setWrapText(true);
         subtitle.setTextAlignment(TextAlignment.CENTER);
-        subtitle.setMaxWidth(520);
+        subtitle.setAlignment(Pos.CENTER);
+        subtitle.setMaxWidth(Double.MAX_VALUE);
 
-        Button resume = new Button("Продолжить обучение");
-        resume.getStyleClass().add("primary");
+        var resume = AppButton.primary("▶ Продолжить обучение", e -> nav.resumeLast());
         resume.setVisible(nav.hasResume());
         resume.setManaged(nav.hasResume());
-        resume.setOnAction(e -> nav.resumeLast());
 
-        Button javaBtn = new Button("Java");
-        javaBtn.getStyleClass().add("primary");
-        javaBtn.setOnAction(e -> {
+        var javaBtn = AppButton.primary("☕ Java", e -> {
             nav.selectLanguage(CourseLanguage.JAVA);
             nav.showTrackSelect();
         });
 
-        Button kotlinBtn = new Button("Kotlin");
-        kotlinBtn.getStyleClass().add("secondary");
-        kotlinBtn.setOnAction(e -> {
+        var kotlinBtn = AppButton.secondary("🟣 Kotlin", e -> {
             nav.selectLanguage(CourseLanguage.KOTLIN);
             nav.showTrackSelect();
         });
 
-        VBox box = new VBox(16, title, subtitle, resume, javaBtn, kotlinBtn);
-        box.setPadding(new Insets(28));
-        box.setAlignment(Pos.CENTER);
-        box.setMaxWidth(560);
-        box.getStyleClass().add("card");
+        var sandbox = AppButton.secondary("🧪 Песочница", e -> nav.showSandbox());
 
-        VBox page = new VBox(box);
+        HBox langRow = new HBox(12, javaBtn, kotlinBtn);
+        langRow.setAlignment(Pos.CENTER);
+
+        HBox quickRow = new HBox(12, sandbox);
+        quickRow.setAlignment(Pos.CENTER);
+
+        VBox content = new VBox(16, title, subtitle, resume, langRow, quickRow);
+        content.setAlignment(Pos.CENTER);
+        content.setFillWidth(true);
+
+        AppCard card = new AppCard(content);
+        card.setMaxWidth(820);
+
+        VBox page = new VBox(card);
         page.setAlignment(Pos.CENTER);
-        page.setPadding(new Insets(24));
+        page.setPadding(new Insets(28));
         return page;
     }
 }

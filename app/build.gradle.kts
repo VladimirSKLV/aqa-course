@@ -41,6 +41,8 @@ dependencies {
     runtimeOnly("org.openjfx:javafx-graphics:${javafx.version}:$javafxPlatform")
     runtimeOnly("org.openjfx:javafx-controls:${javafx.version}:$javafxPlatform")
     runtimeOnly("org.openjfx:javafx-web:${javafx.version}:$javafxPlatform")
+
+    implementation("org.fxmisc.richtext:richtextfx:0.11.7")
 }
 
 runtime {
