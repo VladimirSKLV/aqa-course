@@ -1,0 +1,44 @@
+id: "kotlin-004"
+language: "KOTLIN"
+track: "BEGINNER"
+order: 4
+title: "Блоки Kotlin Beginner AQA: функции, ООП, первые тесты и конфигурация BaseUrl"
+theory:
+  markdown: "lessons/kotlin/004/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Какой подход к функциям в Kotlin полезен в автотестах?"
+      options:
+        - text: "Выносить повторяемые шаги в функции и extension-функции"
+          correct: true
+          explanation: "Это повышает читаемость и снижает дублирование сценариев."
+        - text: "Писать все действия внутри одного @Test"
+          correct: false
+          explanation: "Так тесты быстро превращаются в трудно поддерживаемые скрипты."
+        - text: "Использовать функции только в production-коде"
+          correct: false
+          explanation: "Функции необходимы и в тестовой автоматизации."
+    - text: "Почему настройка BaseUrl обязательна даже на beginner-этапе?"
+      options:
+        - text: "Чтобы запускать тесты на разных стендах/тренажёрах без переписывания кода"
+          correct: true
+          explanation: "Конфигурация окружения — базовый навык для стабильных автотестов."
+        - text: "Чтобы отключить все проверки"
+          correct: false
+          explanation: "BaseUrl не отключает проверки."
+        - text: "Потому что иначе Kotlin не компилируется"
+          correct: false
+          explanation: "Компиляция языка не зависит от BaseUrl."
+    - text: "Что важно в структуре AQA-проекта?"
+      options:
+        - text: "Разделить код по слоям: тесты, страницы, API-клиенты, модели, утилиты"
+          correct: true
+          explanation: "Ясная архитектура делает проект расширяемым."
+        - text: "Складывать всё в одну папку"
+          correct: false
+          explanation: "Это ухудшает поддержку и навигацию."
+        - text: "Убрать Gradle/Maven"
+          correct: false
+          explanation: "Сборщик нужен для управления зависимостями и запусков."

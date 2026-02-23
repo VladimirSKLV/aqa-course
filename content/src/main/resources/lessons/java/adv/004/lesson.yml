@@ -1,0 +1,44 @@
+id: "java-adv-004"
+language: "JAVA"
+track: "ADVANCED"
+order: 4
+title: "Advanced Java AQA: отдельные блоки Selenium, Playwright, API и Mock/Lombok"
+theory:
+  markdown: "lessons/java/adv/004/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Как правильно организовать web-часть в advanced-программе?"
+      options:
+        - text: "Сделать отдельные блоки по Selenium и по Playwright"
+          correct: true
+          explanation: "Так проще сравнивать подходы, инфраструктуру и области применения."
+        - text: "Смешать все фреймворки в одном уроке без структуры"
+          correct: false
+          explanation: "Так сложнее учиться и поддерживать кодовую базу."
+        - text: "Оставить только XPath"
+          correct: false
+          explanation: "Нужны и CSS, и XPath, и стратегический выбор локаторов."
+    - text: "Почему Rest Assured вынесен в отдельный стек-блок?"
+      options:
+        - text: "API-автотесты имеют свою архитектуру, проверки и стратегии стабилизации"
+          correct: true
+          explanation: "Это самостоятельная компетенция, которую удобно развивать отдельно."
+        - text: "Потому что он работает только с Selenium"
+          correct: false
+          explanation: "Rest Assured не зависит от Selenium."
+        - text: "Потому что с ним нельзя делать негативные тесты"
+          correct: false
+          explanation: "Негативные тесты — обязательная часть API-покрытия."
+    - text: "Зачем выносить Mockito и Lombok в отдельные уроки?"
+      options:
+        - text: "Чтобы отдельно отработать моки зависимостей и сокращение шаблонного кода моделей"
+          correct: true
+          explanation: "Mockito и Lombok решают разные задачи и требуют отдельной практики."
+        - text: "Чтобы полностью отказаться от unit-тестов"
+          correct: false
+          explanation: "Наоборот, Mockito усиливает unit-тестирование."
+        - text: "Потому что Lombok заменяет JUnit"
+          correct: false
+          explanation: "Lombok не заменяет тестовый фреймворк."
