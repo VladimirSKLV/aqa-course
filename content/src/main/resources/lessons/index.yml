@@ -10,6 +10,7 @@ blocks:
       - path: "lessons/java/001/lesson.yml"
       - path: "lessons/java/002/lesson.yml"
       - path: "lessons/java/003/lesson.yml"
+      - path: "lessons/java/004/lesson.yml"
 
   - language: "JAVA"
     track: "ADVANCED"
@@ -17,6 +18,7 @@ blocks:
       - path: "lessons/java/adv/001/lesson.yml"
       - path: "lessons/java/adv/002/lesson.yml"
       - path: "lessons/java/adv/003/lesson.yml"
+      - path: "lessons/java/adv/004/lesson.yml"
 
   - language: "KOTLIN"
     track: "BEGINNER"
@@ -24,6 +26,7 @@ blocks:
       - path: "lessons/kotlin/001/lesson.yml"
       - path: "lessons/kotlin/002/lesson.yml"
       - path: "lessons/kotlin/003/lesson.yml"
+      - path: "lessons/kotlin/004/lesson.yml"
 
   - language: "KOTLIN"
     track: "ADVANCED"
@@ -31,3 +34,4 @@ blocks:
       - path: "lessons/kotlin/adv/001/lesson.yml"
       - path: "lessons/kotlin/adv/002/lesson.yml"
       - path: "lessons/kotlin/adv/003/lesson.yml"
+      - path: "lessons/kotlin/adv/004/lesson.yml"

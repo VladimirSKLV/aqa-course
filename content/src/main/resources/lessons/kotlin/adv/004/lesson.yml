@@ -1,0 +1,44 @@
+id: "kotlin-adv-004"
+language: "KOTLIN"
+track: "ADVANCED"
+order: 4
+title: "Advanced Kotlin AQA: Selenium, Playwright, Rest Assured, MockK/Mockito и Lombok-аналоги"
+theory:
+  markdown: "lessons/kotlin/adv/004/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Как лучше разделить web-автотестирование в advanced Kotlin-треке?"
+      options:
+        - text: "На отдельные блоки Selenium и Playwright"
+          correct: true
+          explanation: "Разделение позволяет глубже проработать особенности каждого инструмента."
+        - text: "Оставить только один общий урок по UI"
+          correct: false
+          explanation: "Одного урока недостаточно для сложных сценариев."
+        - text: "Использовать только ручные проверки"
+          correct: false
+          explanation: "Курс посвящён автоматизации."
+    - text: "Почему API-автотестирование через Rest Assured выделено отдельно?"
+      options:
+        - text: "Это самостоятельный стек с собственной архитектурой, данными и проверками"
+          correct: true
+          explanation: "API-слой не должен теряться внутри UI-тем."
+        - text: "Потому что Rest Assured заменяет Playwright"
+          correct: false
+          explanation: "Это разные области: API и UI."
+        - text: "Потому что в API нет исключений"
+          correct: false
+          explanation: "Исключения и ошибки в API — важный объект тестирования."
+    - text: "Что важно добавить в advanced-проект для гибкости окружений?"
+      options:
+        - text: "Параметр baseUrl и возможность запускать тесты на любом открытом тренажёре"
+          correct: true
+          explanation: "Это нужно для реальной проектной работы и CI."
+        - text: "Жёстко зашить URL во все тесты"
+          correct: false
+          explanation: "Такой подход ломает масштабирование."
+        - text: "Удалить конфигурационные файлы"
+          correct: false
+          explanation: "Конфигурация обязательна для управляемого запуска."
