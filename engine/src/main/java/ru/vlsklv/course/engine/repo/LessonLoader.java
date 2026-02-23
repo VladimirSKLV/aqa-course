@@ -8,7 +8,9 @@ import ru.vlsklv.course.engine.model.Lesson;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class LessonLoader {
     private final ObjectMapper yaml;
@@ -20,13 +22,16 @@ public class LessonLoader {
 
     public LessonRepository loadFromClasspathIndex(String indexPath) {
         LessonIndex index = readYaml(indexPath, LessonIndex.class);
-        if (index == null || index.getLessons() == null) {
+        if (index == null) {
             return new LessonRepository(List.of());
         }
 
         List<Lesson> lessons = new ArrayList<>();
-        for (LessonIndex.LessonRef ref : index.getLessons()) {
+        Set<String> seenPaths = new LinkedHashSet<>();
+
+        for (LessonIndex.LessonRef ref : index.flattenLessonRefs()) {
             if (ref == null || ref.getPath() == null || ref.getPath().isBlank()) continue;
+            if (!seenPaths.add(ref.getPath())) continue;
             Lesson lesson = readYaml(ref.getPath(), Lesson.class);
             if (lesson != null) lessons.add(lesson);
         }

@@ -35,11 +35,13 @@ public class LessonView {
 
         Label subtitle = new Label("Теория. После изучения перейдите к домашнему заданию.");
         subtitle.getStyleClass().add("muted");
+        subtitle.setWrapText(true);
 
         String md = nav.loader().readResourceText(lesson.getTheory().getMarkdown());
         String html = MarkdownRenderer.toHtml(md != null ? md : "");
 
         WebView web = new WebView();
+        web.getStyleClass().add("app-scrollable");
         web.getEngine().loadContent(html);
 
         var back = AppButton.secondary("К списку уроков", e -> nav.showLessonList());

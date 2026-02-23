@@ -1,7 +1,26 @@
-lessons:
-  - path: "lessons/java/001/lesson.yml"
-  - path: "lessons/java/adv/001/lesson.yml"
-  - path: "lessons/java/002/lesson.yml"
-  - path: "lessons/java/adv/002/lesson.yml"
-  - path: "lessons/java/003/lesson.yml"
-  - path: "lessons/java/adv/003/lesson.yml"
+# Индекс поддерживает оба формата:
+# 1) lessons: [ { path: ... } ]
+# 2) blocks:  [ { language, track, lessons: [ { path: ... } ] } ]
+# Для удобного масштабирования рекомендуется использовать blocks.
+
+blocks:
+  - language: "JAVA"
+    track: "BEGINNER"
+    lessons:
+      - path: "lessons/java/001/lesson.yml"
+      - path: "lessons/java/002/lesson.yml"
+      - path: "lessons/java/003/lesson.yml"
+
+  - language: "JAVA"
+    track: "ADVANCED"
+    lessons:
+      - path: "lessons/java/adv/001/lesson.yml"
+      - path: "lessons/java/adv/003/lesson.yml"
+
+  - language: "KOTLIN"
+    track: "BEGINNER"
+    lessons: []
+
+  - language: "KOTLIN"
+    track: "ADVANCED"
+    lessons: []

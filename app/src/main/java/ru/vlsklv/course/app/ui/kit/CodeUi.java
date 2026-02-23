@@ -37,6 +37,7 @@ public final class CodeUi {
     public static EditorBundle createEditor(String initialText, CompletionEngine completionEngine) {
         CodeArea editor = new CodeArea();
         editor.getStyleClass().add("code-area");
+        editor.getStyleClass().add("app-scrollable");
         editor.setParagraphGraphicFactory(LineNumberFactory.get(editor));
         editor.replaceText(initialText == null ? "" : initialText);
 
@@ -125,11 +126,12 @@ public final class CodeUi {
                 insert = insert.replace(marker, "");
             }
 
-            editor.replaceText(s.replaceFrom(), s.replaceTo(), insert);
+            String preparedInsert = normalizeSnippetIndentation(editor.getText(), s.replaceFrom(), insert);
+            editor.replaceText(s.replaceFrom(), s.replaceTo(), preparedInsert);
 
             int newCaret = (cursorPosInInsert >= 0)
                     ? (s.replaceFrom() + cursorPosInInsert)
-                    : (s.replaceFrom() + insert.length());
+                    : (s.replaceFrom() + preparedInsert.length());
 
             editor.moveTo(newCaret);
             editor.requestFollowCaret();
@@ -166,14 +168,12 @@ public final class CodeUi {
         };
 
         editor.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-            // Ctrl+Space — открыть подсказки
             if (e.getCode() == KeyCode.SPACE && e.isControlDown()) {
                 e.consume();
                 showCompletion.accept(true);
                 return;
             }
 
-            // popup открыт: навигация/принятие
             if (completionPopup.isShowing()) {
                 if (e.getCode() == KeyCode.ESCAPE) {
                     e.consume();
@@ -208,9 +208,9 @@ public final class CodeUi {
                     CompletionEngine.CompletionItem best = pickBestForTab.apply(s);
                     if (best != null) {
                         applyCompletion.accept(best);
-                        return;
+                    } else {
+                        showCompletion.accept(true);
                     }
-                    showCompletion.accept(true);
                     return;
                 }
 
@@ -240,5 +240,37 @@ public final class CodeUi {
         });
 
         return new EditorBundle(editor, editorScroll, completionPopup, completionList, hideCompletion);
+    }
+
+    private static String normalizeSnippetIndentation(String text, int replaceFrom, String insert) {
+        if (insert == null || !insert.contains("\n")) {
+            return insert == null ? "" : insert;
+        }
+
+        String baseIndent = currentLineIndent(text, replaceFrom);
+        String[] lines = insert.split("\\n", -1);
+
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < lines.length; i++) {
+            if (i > 0) out.append('\n').append(baseIndent);
+            out.append(lines[i]);
+        }
+        return out.toString();
+    }
+
+    private static String currentLineIndent(String text, int pos) {
+        if (text == null || text.isEmpty()) return "";
+
+        int safePos = Math.max(0, Math.min(pos, text.length()));
+        int lineStart = text.lastIndexOf('\n', Math.max(0, safePos - 1));
+        lineStart = lineStart < 0 ? 0 : lineStart + 1;
+
+        int i = lineStart;
+        while (i < text.length()) {
+            char c = text.charAt(i);
+            if (c == ' ' || c == '\t') i++;
+            else break;
+        }
+        return text.substring(lineStart, i);
     }
 }
