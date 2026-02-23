@@ -1,0 +1,19 @@
+id: "kotlin-adv-002"
+language: "KOTLIN"
+track: "ADVANCED"
+order: 2
+title: "Kotlin Advanced: generics и безопасные приведения"
+theory:
+  markdown: "lessons/kotlin/adv/002/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Что возвращает оператор as? при несовместимом типе?"
+      options:
+        - text: "null"
+          correct: true
+          explanation: "as? — безопасное приведение с null-результатом."
+        - text: "0"
+          correct: false
+          explanation: "Числовое значение не возвращается автоматически."

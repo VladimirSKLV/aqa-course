@@ -20,8 +20,14 @@ blocks:
 
   - language: "KOTLIN"
     track: "BEGINNER"
-    lessons: []
+    lessons:
+      - path: "lessons/kotlin/001/lesson.yml"
+      - path: "lessons/kotlin/002/lesson.yml"
+      - path: "lessons/kotlin/003/lesson.yml"
 
   - language: "KOTLIN"
     track: "ADVANCED"
-    lessons: []
+    lessons:
+      - path: "lessons/kotlin/adv/001/lesson.yml"
+      - path: "lessons/kotlin/adv/002/lesson.yml"
+      - path: "lessons/kotlin/adv/003/lesson.yml"

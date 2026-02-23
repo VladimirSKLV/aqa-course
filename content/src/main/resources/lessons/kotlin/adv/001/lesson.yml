@@ -1,0 +1,19 @@
+id: "kotlin-adv-001"
+language: "KOTLIN"
+track: "ADVANCED"
+order: 1
+title: "Kotlin Advanced: data class, точность чисел и время"
+theory:
+  markdown: "lessons/kotlin/adv/001/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Почему data class удобен для автотестов?"
+      options:
+        - text: "Автоматически генерирует equals/hashCode/toString"
+          correct: true
+          explanation: "Это упрощает сравнение моделей в тестах."
+        - text: "Запрещает null"
+          correct: false
+          explanation: "Nullability зависит от типа полей, не от data class."
