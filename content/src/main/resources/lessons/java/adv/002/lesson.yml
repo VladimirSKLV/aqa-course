@@ -1,0 +1,17 @@
+id: "java-adv-002"
+language: "JAVA"
+track: "ADVANCED"
+order: 2
+title: "Generics, Class<T> и безопасные приведения типов (safeCast)"
+theory:
+  markdown: "lessons/java/adv/002/theory.md"
+assignment:
+  type: "code"
+  runner: "JAVA"
+  fileName: "Main.java"
+  mainClass: "Main"
+  template: "lessons/java/adv/002/template/Main.java"
+  expectedStdout: |
+    str=hello
+    int=42
+    missing=true
