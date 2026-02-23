@@ -3,6 +3,7 @@ package ru.vlsklv.course.app.ui.kit;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
+import javafx.scene.layout.Region;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
@@ -38,10 +39,13 @@ public final class CodeUi {
         CodeArea editor = new CodeArea();
         editor.getStyleClass().add("code-area");
         editor.getStyleClass().add("app-scrollable");
+        editor.setPrefWidth(Region.USE_COMPUTED_SIZE);
+        editor.setMaxWidth(Double.MAX_VALUE);
         editor.setParagraphGraphicFactory(LineNumberFactory.get(editor));
         editor.replaceText(initialText == null ? "" : initialText);
 
         VirtualizedScrollPane<CodeArea> editorScroll = new VirtualizedScrollPane<>(editor);
+        editorScroll.setMaxWidth(Double.MAX_VALUE);
 
         Popup completionPopup = new Popup();
         completionPopup.setAutoHide(true);

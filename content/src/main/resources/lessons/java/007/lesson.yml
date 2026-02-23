@@ -1,0 +1,22 @@
+id: "java-007"
+language: "JAVA"
+track: "BEGINNER"
+order: 7
+title: "Циклы, параметризованные тесты и аннотации"
+theory:
+  markdown: "lessons/java/007/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Когда нужен параметризованный тест?"
+      options:
+        - text: "Когда одна проверка выполняется на разных входных данных"
+          correct: true
+          explanation: "Так убирается дублирование тестового кода."
+        - text: "Только для одного набора данных"
+          correct: false
+          explanation: "Для одного набора параметризация обычно не нужна."
+        - text: "Никогда"
+          correct: false
+          explanation: "Это важный инструмент для чистых тестов."

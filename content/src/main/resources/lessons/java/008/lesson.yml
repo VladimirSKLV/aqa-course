@@ -1,0 +1,22 @@
+id: "java-008"
+language: "JAVA"
+track: "BEGINNER"
+order: 8
+title: "Структура папок и файлов"
+theory:
+  markdown: "lessons/java/008/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Где обычно лежат Java-автотесты?"
+      options:
+        - text: "В src/test/java"
+          correct: true
+          explanation: "Это стандартная структура тестового кода."
+        - text: "Только в src/main/java"
+          correct: false
+          explanation: "Тесты держат отдельно от production-кода."
+        - text: "В корне без структуры"
+          correct: false
+          explanation: "Так проект быстро становится неуправляемым."

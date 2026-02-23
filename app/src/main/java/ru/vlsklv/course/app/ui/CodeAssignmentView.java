@@ -61,6 +61,7 @@ public class CodeAssignmentView {
         if (template == null) template = "// Template not found\n";
 
         CodeUi.EditorBundle bundle = CodeUi.createJavaEditor(template);
+        bundle.scroll().setMaxWidth(Double.MAX_VALUE);
 
         Label editorTitle = new Label("Редактор");
         editorTitle.getStyleClass().add("panel-title");

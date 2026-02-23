@@ -1,0 +1,22 @@
+id: "java-006"
+language: "JAVA"
+track: "BEGINNER"
+order: 6
+title: "Пишем первые тесты (JUnit 5)"
+theory:
+  markdown: "lessons/java/006/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Какая аннотация помечает тест в JUnit 5?"
+      options:
+        - text: "@Test"
+          correct: true
+          explanation: "Это базовая аннотация тестового метода."
+        - text: "@Check"
+          correct: false
+          explanation: "В JUnit такой базовой аннотации нет."
+        - text: "@Case"
+          correct: false
+          explanation: "Используется именно @Test."

@@ -1,0 +1,13 @@
+id: "java-013"
+language: "JAVA"
+track: "BEGINNER"
+order: 13
+title: "Подготовка к API-автоматизации"
+theory:
+  markdown: "lessons/java/013/theory.md"
+assignment:
+  type: "code"
+  runner: "JAVA"
+  fileName: "Main.java"
+  mainClass: "Main"
+  template: "lessons/java/013/template/Main.java"

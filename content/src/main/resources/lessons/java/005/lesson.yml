@@ -1,0 +1,22 @@
+id: "java-005"
+language: "JAVA"
+track: "BEGINNER"
+order: 5
+title: "Что и зачем мы автоматизируем"
+theory:
+  markdown: "lessons/java/005/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Что автоматизировать в первую очередь?"
+      options:
+        - text: "Критичные и часто повторяемые сценарии"
+          correct: true
+          explanation: "Это быстрее всего снижает риск релиза."
+        - text: "Любые случайные проверки"
+          correct: false
+          explanation: "Нужна приоритизация."
+        - text: "Только редкие кейсы"
+          correct: false
+          explanation: "Редкие кейсы не всегда окупаются."
