@@ -103,3 +103,6 @@
 - Понятную дорожную карту beginner-уровня.
 - Несколько уроков в каждом критичном блоке.
 - Подготовку к отдельным трекам Selenium, Playwright и Rest Assured в advanced-части.
+
+
+> Продолжение этого плана вынесено в отдельные advanced-уроки `java-adv-005..008` (Selenium, Playwright, Rest Assured, Mockito/Lombok).

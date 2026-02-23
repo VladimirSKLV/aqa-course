@@ -1,0 +1,22 @@
+id: "java-adv-008"
+language: "JAVA"
+track: "ADVANCED"
+order: 8
+title: "Mockito, Lombok, композиция, наследование и исключения в автотестах"
+theory:
+  markdown: "lessons/java/adv/008/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Зачем выносить Mockito и Lombok в отдельные уроки?"
+      options:
+        - text: "Они решают разные задачи: изоляция зависимостей и уменьшение шаблонного кода"
+          correct: true
+          explanation: "Отдельные уроки дают сфокусированную практику по каждому инструменту."
+        - text: "Чтобы убрать unit-тесты"
+          correct: false
+          explanation: "Mockito наоборот усиливает unit-покрытие."
+        - text: "Потому что Lombok заменяет JUnit"
+          correct: false
+          explanation: "Lombok не заменяет тестовый фреймворк."

@@ -1,0 +1,22 @@
+id: "java-adv-005"
+language: "JAVA"
+track: "ADVANCED"
+order: 5
+title: "Selenium WebDriver: локаторы, инфраструктура и сложные UI"
+theory:
+  markdown: "lessons/java/adv/005/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Какой подход к локаторам самый устойчивый для Selenium?"
+      options:
+        - text: "Стабильные data-testid/id + явная стратегия CSS/XPath"
+          correct: true
+          explanation: "Приоритет у предсказуемых атрибутов и явной договорённости команды."
+        - text: "Только абсолютные XPath от html/body"
+          correct: false
+          explanation: "Абсолютные XPath чаще всего ломаются при малейшем изменении DOM."
+        - text: "Локаторы без ожиданий"
+          correct: false
+          explanation: "Нужны явные ожидания и стабильная инфраструктура."
