@@ -78,6 +78,7 @@ public class LessonListView {
         ListView<Lesson> list = new ListView<>();
         list.setItems(FXCollections.observableArrayList(lessons));
         list.setCellFactory(v -> new LessonCell(nav));
+        list.getStyleClass().add("lesson-list");
         list.setPrefHeight(560);
 
         var back = AppButton.ghost("← Назад", e -> nav.showTrackSelect());
@@ -145,6 +146,8 @@ public class LessonListView {
 
             String status = done ? "✅" : (unlocked ? "▶" : "🔒");
             setText(status + "  " + item.getOrder() + ". " + item.getTitle());
+            setWrapText(true);
+            setPadding(new Insets(0, 0, 10, 0));
             setDisable(!unlocked && !done);
             setOpacity((!unlocked && !done) ? 0.60 : 1.0);
         }

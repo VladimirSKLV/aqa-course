@@ -19,21 +19,25 @@ public final class CompletionEngine {
 
     private static final List<CompletionItem> SNIPPETS = List.of(
             CompletionItem.snippet("if (...) { ... }", "if",
-                    """
-                            if ({{cursor}}) {
-                               \s
-                            }
-                            """),
+                    "if ({{cursor}}) {\n" +
+                            "    \n" +
+                            "}"),
             CompletionItem.snippet("if (...) { ... } else { ... }", "if",
-                    """
-                            if ({{cursor}}) {
-                               \s
-                            } else {
-                               \s
-                            }
-                            """),
+                    "if ({{cursor}}) {\n" +
+                            "    \n" +
+                            "} else {\n" +
+                            "    \n" +
+                            "}"),
+            CompletionItem.snippet("for (int i = 0; i < ...; i++) { ... }", "for",
+                    "for (int i = 0; i < {{cursor}}; i++) {\n" +
+                            "    \n" +
+                            "}"),
+            CompletionItem.snippet("while (...) { ... }", "while",
+                    "while ({{cursor}}) {\n" +
+                            "    \n" +
+                            "}"),
             CompletionItem.snippet("System.out.println(...)", "System",
-                    "System.out.println({{cursor}});\n"),
+                    "System.out.println({{cursor}});"),
             CompletionItem.snippet("assertTrue(...)", "assert",
                     "assertTrue({{cursor}});"),
             CompletionItem.snippet("assertFalse(...)", "assert",
@@ -43,6 +47,7 @@ public final class CompletionEngine {
             CompletionItem.snippet("assertNotNull(...)", "assert",
                     "assertNotNull({{cursor}});")
     );
+
 
     public Suggestion suggest(String fullText, int caretPos, boolean force) {
         Prefix p = extractPrefix(fullText, caretPos);

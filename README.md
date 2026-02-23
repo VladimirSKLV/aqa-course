@@ -1,88 +1,56 @@
-# AQA Course (Java/Kotlin) — каркас проекта
+# AQA Course — обучение Java и Kotlin для AQA
 
-Десктоп-приложение для обучения Java и Kotlin для начинающих AQA.  
-Стек: **Java 17**, **Gradle**, **Kotlin 1.9.\***, GUI на **JavaFX**.
+Интерактивное desktop-приложение с теорией, квизами и практическими заданиями по Java и Kotlin.
 
-## Модули
+## Быстрый старт для студентов
 
-- `:app` — JavaFX UI, навигация, отображение уроков, выполнение ДЗ (quiz).
-- `:engine` — модели уроков/заданий, загрузка уроков из ресурсов, хранение прогресса.
-- `:content` — контент уроков (YAML + Markdown) как ресурсы.
-- `:runner` — заглушка под будущий запуск/проверку кода (Java/Kotlin + JUnit).
+Скачивать весь репозиторий **не обязательно**.
 
-## Требования для разработки
+Готовые сборки доступны в разделе **Releases**:
+- `aqa-course-app-all.jar` — кроссплатформенный запуск через установленную Java.
+- `aqa-course-app.exe` — запуск в Windows как обычное приложение.
 
-- JDK 17 (например Temurin 17)
-- Gradle
+### Установка через JAR
 
-> Примечание: Gradle Wrapper файлы не включены (нужен бинарный `gradle-wrapper.jar`).
-> Если у вас нет установленного Gradle, установите Gradle или сгенерируйте wrapper:
->
-> `gradle wrapper --gradle-version 8.7`
+1. Установите Java 17+ (Temurin/OpenJDK).
+2. Скачайте `aqa-course-app-all.jar` из Releases.
+3. Запустите:
+   ```bash
+   java -jar aqa-course-app-all.jar
+   ```
 
-## Запуск во время разработки
+### Установка через EXE (Windows)
 
-### 1) Запуск UI
+1. Скачайте `aqa-course-app.exe` из Releases.
+2. Запустите файл двойным кликом.
+3. При необходимости разрешите запуск в SmartScreen.
 
-Из корня проекта:
+## Структура курсов по блокам
 
-- Через установленный Gradle:
-  - `gradle :app:run`
+### Java
 
-- Через wrapper (если вы его сгенерировали):
-  - `./gradlew :app:run` (Linux/macOS)
-  - `gradlew.bat :app:run` (Windows)
+- **Beginner**
+  - Переменные, типы данных и операторы.
+  - Условия, циклы и базовые методы.
+  - Основы практик автотестов: стабильные проверки, работа со строками и числами.
 
-### 2) Сборка fat JAR (для тестирования как JAR)
+- **Advanced**
+  - Коллекции и Stream API.
+  - Optional, BigDecimal, исключения и обработка edge cases.
+  - Архитектура тестового кода и переиспользуемые компоненты.
 
-- `gradle :app:shadowJar`
+### Kotlin
 
-Результат:
-- `app/build/libs/aqa-course-app-all.jar`
+- **Beginner**
+  - Базовый синтаксис Kotlin, переменные/типы, `if/when`, циклы.
+  - Null-safety и работа со строками/коллекциями.
 
-Запуск:
-- `java -jar app/build/libs/aqa-course-app-all.jar`
+- **Advanced**
+  - Функциональные операции над коллекциями, `data class`, extension functions.
+  - Корутины, обработка ошибок, шаблоны построения тестовых DSL.
 
-## Где хранится прогресс
+> Примечание: Java-блок уже наполнен уроками в приложении. Kotlin-блоки подготовлены как структура программы и расширяются по мере публикации новых уроков.
 
-Прогресс сохраняется локально:
-- Windows: `%USERPROFILE%\.aqa-course\progress.json`
-- Linux/macOS: `~/.aqa-course/progress.json`
+## Для разработчиков
 
-Удалите этот файл, чтобы сбросить прогресс.
-
-## Контент уроков
-
-См. `content/src/main/resources/lessons/`
-
-- `lessons/index.yml` — индекс уроков (список путей к YAML уроков).
-- `lessons/java/001/lesson.yml` — описание урока (метаданные + quiz).
-- `lessons/java/001/theory.md` — теория в Markdown.
-
-## Как добавить новый урок (кратко)
-
-1) Создать папку `content/src/main/resources/lessons/<language>/<NNN>/`
-2) Добавить `lesson.yml` + `theory.md`
-3) Добавить путь урока в `lessons/index.yml`
-4) Перезапустить `:app:run`
-
-## Следующие шаги (архитектурно)
-
-- Реализовать `code`-ДЗ: шаблоны файлов + скрытые JUnit-тесты-валидаторы в sandbox.
-- Добавить терминал для stdout/stderr выполнения.
-- Добавить редактор кода (Monaco в WebView или RichTextFX).
-
-
-## Важно про запуск JAR (JavaFX)
-
-Если при `java -jar ...` вы видите ошибку `JavaFX runtime components are missing`, значит JavaFX зависимости не попали в classpath/uber-jar. В модуле `app` уже добавлены platform-specific JavaFX runtime зависимости (win/linux/mac). Пересоберите:
-
-```bash
-gradle :app:shadowJar
-```
-
-И запускайте:
-
-```bash
-java -jar app/build/libs/aqa-course-app-all.jar
-```
+Техническая документация, архитектура и команды сборки перенесены в `docs/README.md`.
