@@ -10,12 +10,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import ru.vlsklv.course.app.sandbox.JavaSandboxRunner;
+import ru.vlsklv.course.app.autotest.JunitAutotestRunner;
 import ru.vlsklv.course.app.ui.kit.AppButton;
 import ru.vlsklv.course.app.ui.kit.AppPanel;
 import ru.vlsklv.course.app.ui.kit.CodeUi;
@@ -101,8 +103,24 @@ public class SandboxView {
         status.setWrapText(true);
 
         JavaSandboxRunner runner = new JavaSandboxRunner();
+        JunitAutotestRunner autotestRunner = new JunitAutotestRunner();
+
+        TextField baseUrl = new TextField("https://jsonplaceholder.typicode.com");
+        baseUrl.getStyleClass().add("app-input");
+        baseUrl.setPromptText("https://your-trainer.example");
+
+        TextField endpoint = new TextField("/posts/1");
+        endpoint.getStyleClass().add("app-input");
+        endpoint.setPromptText("/api/path");
+
+        Label testStatus = new Label("Укажите baseUrl и запускайте API/Web smoke-тесты из приложения.");
+        testStatus.getStyleClass().addAll("status-bar", "muted");
+        testStatus.setWrapText(true);
 
         var run = AppButton.primary("Запустить", null);
+        var runApi = AppButton.secondary("API автотесты", null);
+        var runWeb = AppButton.secondary("Web автотесты", null);
+        var probe = AppButton.secondary("Тестовый запрос", null);
         var clear = AppButton.secondary("Очистить вывод", e -> terminal.clear());
         var reset = AppButton.secondary("Шаблон", null);
         var back = AppButton.ghost("Назад", e -> nav.showWelcome());
@@ -204,8 +222,56 @@ public class SandboxView {
             t.start();
         });
 
+        probe.setOnAction(e -> {
+            terminal.clear();
+            testStatus.getStyleClass().removeAll("error", "success");
+            if (!testStatus.getStyleClass().contains("muted")) testStatus.getStyleClass().add("muted");
+            testStatus.setText("Отправка запроса...");
+
+            Task<JunitAutotestRunner.ProbeResult> task = new Task<>() {
+                @Override
+                protected JunitAutotestRunner.ProbeResult call() {
+                    return autotestRunner.sendProbe(baseUrl.getText(), endpoint.getText());
+                }
+            };
+
+            task.setOnSucceeded(ev -> {
+                JunitAutotestRunner.ProbeResult rr = task.getValue();
+                if (rr.success()) {
+                    testStatus.getStyleClass().removeAll("muted", "error");
+                    testStatus.getStyleClass().add("success");
+                    testStatus.setText("Запрос выполнен: HTTP " + rr.statusCode() + ", " + rr.elapsedMs() + " ms");
+                    terminal.appendText("URL: " + rr.url() + "\nHTTP: " + rr.statusCode() + "\n\n" + rr.body());
+                } else {
+                    testStatus.getStyleClass().removeAll("muted", "success");
+                    testStatus.getStyleClass().add("error");
+                    testStatus.setText(rr.error());
+                }
+            });
+            task.setOnFailed(ev -> {
+                testStatus.getStyleClass().removeAll("muted", "success");
+                testStatus.getStyleClass().add("error");
+                testStatus.setText("Ошибка запроса: " + task.getException().getMessage());
+            });
+            new Thread(task, "probe-runner").start();
+        });
+
+        runApi.setOnAction(e -> runSuite(autotestRunner, JunitAutotestRunner.SuiteType.API, baseUrl, testStatus, terminal, runApi, runWeb));
+        runWeb.setOnAction(e -> runSuite(autotestRunner, JunitAutotestRunner.SuiteType.WEB, baseUrl, testStatus, terminal, runApi, runWeb));
+
         HBox actions = new HBox(12, back, reset, clear, run);
         actions.setAlignment(Pos.CENTER_RIGHT);
+
+        HBox baseUrlRow = new HBox(10, new Label("BaseUrl:"), baseUrl);
+        HBox.setHgrow(baseUrl, Priority.ALWAYS);
+        HBox endpointRow = new HBox(10, new Label("Endpoint:"), endpoint);
+        HBox.setHgrow(endpoint, Priority.ALWAYS);
+
+        HBox testActions = new HBox(10, probe, runApi, runWeb);
+        testActions.setAlignment(Pos.CENTER_RIGHT);
+
+        VBox autotestBox = new VBox(10, baseUrlRow, endpointRow, testStatus, testActions);
+        AppPanel autotestPanel = new AppPanel(new Label("Автотесты и тестовый API-запрос"), autotestBox);
 
         SplitPane split = new SplitPane();
         split.setOrientation(Orientation.VERTICAL);
@@ -215,7 +281,9 @@ public class SandboxView {
         BorderPane pane = new BorderPane();
         pane.setPadding(new Insets(18));
         pane.setTop(new VBoxHeader(title, subtitle).view());
-        pane.setCenter(split);
+        VBox center = new VBox(12, split, autotestPanel);
+        VBox.setVgrow(split, Priority.ALWAYS);
+        pane.setCenter(center);
 
         VBox bottom = new VBox(10, status, actions);
         bottom.setAlignment(Pos.CENTER_RIGHT);
@@ -225,6 +293,53 @@ public class SandboxView {
         Platform.runLater(bundle.editor()::requestFocus);
 
         return pane;
+    }
+
+    private static void runSuite(
+            JunitAutotestRunner runner,
+            JunitAutotestRunner.SuiteType suiteType,
+            TextField baseUrl,
+            Label status,
+            TextArea terminal,
+            AppButton runApi,
+            AppButton runWeb
+    ) {
+        terminal.clear();
+        status.getStyleClass().removeAll("error", "success");
+        if (!status.getStyleClass().contains("muted")) status.getStyleClass().add("muted");
+        status.setText("Запуск " + suiteType + " suite...");
+
+        runApi.setDisable(true);
+        runWeb.setDisable(true);
+
+        Task<JunitAutotestRunner.RunSummary> task = new Task<>() {
+            @Override
+            protected JunitAutotestRunner.RunSummary call() {
+                return runner.runSuite(suiteType, baseUrl.getText());
+            }
+        };
+
+        task.setOnSucceeded(ev -> {
+            JunitAutotestRunner.RunSummary rr = task.getValue();
+            terminal.appendText(rr.details());
+            status.getStyleClass().removeAll("muted", rr.success() ? "error" : "success");
+            status.getStyleClass().add(rr.success() ? "success" : "error");
+            status.setText(rr.success() ? "Suite выполнен успешно" : "Suite завершён с ошибками");
+            runApi.setDisable(false);
+            runWeb.setDisable(false);
+        });
+
+        task.setOnFailed(ev -> {
+            status.getStyleClass().removeAll("muted", "success");
+            status.getStyleClass().add("error");
+            status.setText("Ошибка запуска suite: " + task.getException().getMessage());
+            runApi.setDisable(false);
+            runWeb.setDisable(false);
+        });
+
+        Thread t = new Thread(task, "autotest-suite-runner");
+        t.setDaemon(true);
+        t.start();
     }
 
     private static String prettyLang(CourseLanguage l) {
