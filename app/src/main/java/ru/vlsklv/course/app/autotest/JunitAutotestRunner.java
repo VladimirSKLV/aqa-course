@@ -1,6 +1,7 @@
 package ru.vlsklv.course.app.autotest;
 
 import java.io.IOException;
+import java.awt.Desktop;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -39,6 +40,11 @@ public class JunitAutotestRunner {
         sb.append("Suite: ").append(suiteType).append("\n")
                 .append("baseUrl: ").append(normalizedBaseUrl).append("\n")
                 .append("Всего: ").append(total).append(" | passed: ").append(passed).append(" | failed: ").append(failed).append("\n");
+
+        if (suiteType == SuiteType.WEB) {
+            sb.append("Открытие браузера: ").append(tryOpenBrowser(normalizedBaseUrl)).append("\n");
+        }
+
         if (!failures.isEmpty()) {
             sb.append("\nПадения:\n");
             failures.forEach(f -> sb.append(f).append("\n"));
@@ -121,6 +127,18 @@ public class JunitAutotestRunner {
                 .GET()
                 .build();
         return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private static String tryOpenBrowser(String baseUrl) {
+        try {
+            if (!Desktop.isDesktopSupported()) {
+                return "не поддерживается в текущем окружении";
+            }
+            Desktop.getDesktop().browse(URI.create(baseUrl));
+            return "успешно";
+        } catch (Exception e) {
+            return "ошибка: " + e.getMessage();
+        }
     }
 
     private record TestCase(String name, CheckedRunnable execute) {}

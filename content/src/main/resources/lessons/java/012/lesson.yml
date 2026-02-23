@@ -1,0 +1,18 @@
+id: "java-012"
+language: "JAVA"
+track: "BEGINNER"
+order: 12
+title: "Валидация ответа"
+theory:
+  markdown: "lessons/java/012/theory.md"
+assignment:
+  type: "code"
+  runner: "JAVA"
+  fileName: "Main.java"
+  mainClass: "Main"
+  template: "lessons/java/012/template/Main.java"
+  expectedStdout: |
+    ASSERT_OK_STATUS=PASS
+    ASSERT_OK_BODY=PASS
+    ASSERT_404_STATUS=PASS
+    ASSERT_404_BODY=PASS

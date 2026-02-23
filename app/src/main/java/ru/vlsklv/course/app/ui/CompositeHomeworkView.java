@@ -169,6 +169,7 @@ public class CompositeHomeworkView {
         if (templateText == null) templateText = "// Template not found\n";
 
         CodeUi.EditorBundle bundle = CodeUi.createJavaEditor(templateText);
+        bundle.scroll().setMaxWidth(Double.MAX_VALUE);
 
         Label editorTitle = new Label("Редактор");
         editorTitle.getStyleClass().add("panel-title");

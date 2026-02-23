@@ -1,0 +1,20 @@
+id: "java-011"
+language: "JAVA"
+track: "BEGINNER"
+order: 11
+title: "Отправка HTTP-запроса из приложения"
+theory:
+  markdown: "lessons/java/011/theory.md"
+assignment:
+  type: "code"
+  runner: "JAVA"
+  fileName: "Main.java"
+  mainClass: "Main"
+  template: "lessons/java/011/template/Main.java"
+  expectedStdout: |
+    OK_STATUS=200
+    OK_IS_2XX=true
+    OK_BODY_HAS_STATUS=true
+    MISSING_STATUS=404
+    MISSING_IS_2XX=false
+    MISSING_BODY_HAS_ERROR=true

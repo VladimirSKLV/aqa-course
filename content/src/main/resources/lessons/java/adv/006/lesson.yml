@@ -2,21 +2,21 @@ id: "java-adv-006"
 language: "JAVA"
 track: "ADVANCED"
 order: 6
-title: "Пишем первые тесты (JUnit 5)"
+title: "Playwright: отдельный web-блок с автожданием и сложными сценариями"
 theory:
   markdown: "lessons/java/adv/006/theory.md"
 assignment:
   type: "quiz"
   passPercent: 80
   questions:
-    - text: "Какая аннотация в JUnit 5 помечает тестовый метод?"
+    - text: "Почему Playwright стоит изучать отдельным блоком?"
       options:
-        - text: "@Test"
+        - text: "У него свои паттерны локаторов, контексты и встроенное автождание"
           correct: true
-          explanation: "Это базовая аннотация для теста."
-        - text: "@Case"
+          explanation: "Подход Playwright отличается от Selenium и требует отдельной практики."
+        - text: "Он полностью заменяет API-тесты"
           correct: false
-          explanation: "Такой стандартной аннотации нет."
-        - text: "@Check"
+          explanation: "UI и API решают разные задачи и дополняют друг друга."
+        - text: "Он работает только в headed-режиме"
           correct: false
-          explanation: "В JUnit используется @Test."
+          explanation: "Headless/headed поддерживаются."

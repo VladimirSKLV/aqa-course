@@ -1,27 +1,20 @@
-# Урок 6. Пишем первые тесты (JUnit 5)
+# Блок Playwright: самостоятельный трек
 
-JUnit 5 — базовый фреймворк для unit-тестов в Java.
+## Урок 1. Архитектура проекта
+- BrowserContext, fixtures, тестовые слои.
 
-Минимальный пример:
+## Урок 2. Локаторы и автождание
+- `getByRole`, `getByTestId`, `locator`.
+- Стабильные селекторы и ожидания без sleep.
 
-```java
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+## Урок 3. Сложные сценарии
+- Multi-tab, iframe, dialogs, network interception.
 
-class Calculator {
-    int sum(int a, int b) { return a + b; }
-}
+## Урок 4. Запуск на онлайн-тренажёре
+- Параметр `baseUrl`.
+- Профили smoke/regression.
 
-class CalculatorTest {
-    @Test
-    void shouldReturnSum() {
-        Calculator calculator = new Calculator();
-        assertEquals(5, calculator.sum(2, 3));
-    }
-}
-```
-
-Ключевые принципы:
-- один тест — одна проверяемая идея;
-- понятные имена тестов;
-- тесты должны быть независимыми.
+## Домашнее задание
+1. Сделать 8 Playwright тестов для открытого стенда.
+2. Сравнить Selenium vs Playwright на 3 сценариях.
+3. Описать правила выбора инструмента в команде.

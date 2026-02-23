@@ -2,21 +2,21 @@ id: "java-adv-008"
 language: "JAVA"
 track: "ADVANCED"
 order: 8
-title: "Структура папок и файлов"
+title: "Mockito, Lombok, композиция, наследование и исключения в автотестах"
 theory:
   markdown: "lessons/java/adv/008/theory.md"
 assignment:
   type: "quiz"
   passPercent: 80
   questions:
-    - text: "Где обычно хранятся автотесты в Java-проекте?"
+    - text: "Зачем выносить Mockito и Lombok в отдельные уроки?"
       options:
-        - text: "В src/test/java"
+        - text: "Они решают разные задачи: изоляция зависимостей и уменьшение шаблонного кода"
           correct: true
-          explanation: "Это стандартная структура для тестового кода."
-        - text: "Только в src/main/java"
+          explanation: "Отдельные уроки дают сфокусированную практику по каждому инструменту."
+        - text: "Чтобы убрать unit-тесты"
           correct: false
-          explanation: "Тесты обычно живут отдельно от production-кода."
-        - text: "В корне проекта без структуры"
+          explanation: "Mockito наоборот усиливает unit-покрытие."
+        - text: "Потому что Lombok заменяет JUnit"
           correct: false
-          explanation: "Это ухудшает поддерживаемость."
+          explanation: "Lombok не заменяет тестовый фреймворк."

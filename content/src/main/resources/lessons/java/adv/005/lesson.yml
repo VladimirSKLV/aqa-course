@@ -2,21 +2,21 @@ id: "java-adv-005"
 language: "JAVA"
 track: "ADVANCED"
 order: 5
-title: "Введение в автоматизированное тестирование: что и зачем автоматизируем"
+title: "Selenium WebDriver: локаторы, инфраструктура и сложные UI"
 theory:
   markdown: "lessons/java/adv/005/theory.md"
 assignment:
   type: "quiz"
   passPercent: 80
   questions:
-    - text: "Какой сценарий обычно автоматизируют первым?"
+    - text: "Какой подход к локаторам самый устойчивый для Selenium?"
       options:
-        - text: "Критический и часто повторяемый smoke-сценарий"
+        - text: "Стабильные data-testid/id + явная стратегия CSS/XPath"
           correct: true
-          explanation: "Это быстро снижает риск релиза."
-        - text: "Любой случайный сценарий"
+          explanation: "Приоритет у предсказуемых атрибутов и явной договорённости команды."
+        - text: "Только абсолютные XPath от html/body"
           correct: false
-          explanation: "Нужна приоритизация по ценности."
-        - text: "Только редкие ручные проверки"
+          explanation: "Абсолютные XPath чаще всего ломаются при малейшем изменении DOM."
+        - text: "Локаторы без ожиданий"
           correct: false
-          explanation: "Редкие кейсы часто не дают окупаемости."
+          explanation: "Нужны явные ожидания и стабильная инфраструктура."

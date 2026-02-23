@@ -2,21 +2,21 @@ id: "java-adv-007"
 language: "JAVA"
 track: "ADVANCED"
 order: 7
-title: "Циклы, параметризованные тесты и аннотации"
+title: "API-автотесты на Rest Assured + запуск тестового запроса из приложения"
 theory:
   markdown: "lessons/java/adv/007/theory.md"
 assignment:
   type: "quiz"
   passPercent: 80
   questions:
-    - text: "Когда стоит применять параметризованный тест?"
+    - text: "Что должно быть обязательным в блоке Rest Assured?"
       options:
-        - text: "Когда одна и та же проверка выполняется на разных входных данных"
+        - text: "CRUD + негативные проверки + параметризация baseUrl"
           correct: true
-          explanation: "Это снижает дублирование и упрощает поддержку."
-        - text: "Только когда тестов меньше трёх"
+          explanation: "Это базовый минимум для устойчивого API покрытия."
+        - text: "Только happy-path"
           correct: false
-          explanation: "Количество тестов не главный критерий."
-        - text: "Никогда — лучше копировать тесты"
+          explanation: "Без негативных кейсов покрытие нерабочее."
+        - text: "Только UI-ассерты"
           correct: false
-          explanation: "Копирование увеличивает техдолг."
+          explanation: "UI-ассерты не заменяют API-проверки."

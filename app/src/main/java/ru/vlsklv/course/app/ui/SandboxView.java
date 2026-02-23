@@ -77,6 +77,7 @@ public class SandboxView {
                 """;
 
         CodeUi.EditorBundle bundle = CodeUi.createJavaEditor(javaTemplate);
+        bundle.scroll().setMaxWidth(Double.MAX_VALUE);
 
         Label editorTitle = new Label("Редактор");
         editorTitle.getStyleClass().add("panel-title");
