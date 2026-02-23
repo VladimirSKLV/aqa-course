@@ -1,0 +1,27 @@
+id: "kotlin-001"
+language: "KOTLIN"
+track: "BEGINNER"
+order: 1
+title: "Kotlin: переменные, типы данных и null-безопасность"
+theory:
+  markdown: "lessons/kotlin/001/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Что лучше использовать для неизменяемой переменной в Kotlin?"
+      options:
+        - text: "val"
+          correct: true
+          explanation: "val делает переменную неизменяемой после инициализации."
+        - text: "var"
+          correct: false
+          explanation: "var разрешает переопределение значения."
+    - text: "Как обозначить nullable строку?"
+      options:
+        - text: "String?"
+          correct: true
+          explanation: "Знак ? показывает, что значение может быть null."
+        - text: "String!"
+          correct: false
+          explanation: "Такой записи в Kotlin для объявления типов нет."

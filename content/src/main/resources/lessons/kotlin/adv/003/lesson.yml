@@ -1,0 +1,30 @@
+id: "kotlin-adv-003"
+language: "KOTLIN"
+track: "ADVANCED"
+order: 3
+title: "Kotlin Advanced: коллекции, sequence и extension-функции"
+theory:
+  markdown: "lessons/kotlin/adv/003/theory.md"
+assignment:
+  type: "composite"
+  steps:
+    - type: "quiz"
+      passPercent: 80
+      questions:
+        - text: "Для чего использовать extension-функцию в тестах?"
+          options:
+            - text: "Чтобы выразить доменное правило в читаемой форме"
+              correct: true
+              explanation: "Extension помогает держать тестовый код компактным."
+            - text: "Чтобы избежать компиляции"
+              correct: false
+              explanation: "Extension не убирает компиляцию, а улучшает выразительность."
+    - type: "code"
+      runner: "KOTLIN"
+      fileName: "Main.kt"
+      mainClass: "MainKt"
+      template: "lessons/kotlin/adv/003/template/Main.kt"
+      expectedStdout: |
+        PAID_TOTAL=17.75
+        TAGS=api,regression,smoke
+        FIRST_FAILED=A-103

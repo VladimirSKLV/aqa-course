@@ -1,0 +1,32 @@
+id: "kotlin-003"
+language: "KOTLIN"
+track: "BEGINNER"
+order: 3
+title: "Kotlin: функции и циклы в проверках автотестов"
+theory:
+  markdown: "lessons/kotlin/003/theory.md"
+assignment:
+  type: "composite"
+  steps:
+    - type: "quiz"
+      passPercent: 80
+      questions:
+        - text: "Зачем выносить проверку статуса в функцию is2xx?"
+          options:
+            - text: "Чтобы переиспользовать правило и убрать дублирование"
+              correct: true
+              explanation: "Функция делает тесты короче и поддерживаемее."
+            - text: "Чтобы Kotlin компилировался быстрее"
+              correct: false
+              explanation: "Главная цель — читаемость и поддержка, а не скорость компиляции."
+    - type: "code"
+      runner: "KOTLIN"
+      fileName: "Main.kt"
+      mainClass: "MainKt"
+      template: "lessons/kotlin/003/template/Main.kt"
+      expectedStdout: |
+        OK: 200
+        OK: 201
+        FAIL: 404
+        OK_COUNT=2
+        FAIL_COUNT=1

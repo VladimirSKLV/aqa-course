@@ -1,12 +1,11 @@
 package ru.vlsklv.course.app.ui;
 
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -16,7 +15,9 @@ import ru.vlsklv.course.engine.model.CourseLanguage;
 import ru.vlsklv.course.engine.model.CourseTrack;
 import ru.vlsklv.course.engine.model.Lesson;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LessonListView {
     private final Navigator nav;
@@ -41,8 +42,8 @@ public class LessonListView {
 
         List<Lesson> lessons = nav.lessonRepository().listByLanguageAndTrack(lang, track);
 
-        String trackTitle = (track == CourseTrack.BEGINNER) ? "Начинающий" : "Продвинутый";
-        Label title = new Label("📚 Уроки: " + (lang == CourseLanguage.JAVA ? "Java" : "Kotlin") + " — " + trackTitle);
+        String trackTitle = (track == CourseTrack.BEGINNER) ? "Начинающие" : "Продвинутые";
+        Label title = new Label("📚 Программа курса: " + (lang == CourseLanguage.JAVA ? "Java" : "Kotlin") + " — " + trackTitle);
         title.getStyleClass().add("h2");
 
         if (lessons.isEmpty()) {
@@ -71,15 +72,15 @@ public class LessonListView {
             return pane;
         }
 
-        Label hint = new Label("Уроки открываются последовательно: пока не пройден предыдущий — следующий недоступен.");
+        Label hint = new Label("Блоки и уроки раскрываются по клику. Открыть можно только доступные уроки по порядку.");
         hint.getStyleClass().add("muted");
         hint.setWrapText(true);
 
-        ListView<Lesson> list = new ListView<>();
-        list.setItems(FXCollections.observableArrayList(lessons));
-        list.setCellFactory(v -> new LessonCell(nav));
-        list.getStyleClass().add("lesson-list");
-        list.setPrefHeight(560);
+        Accordion blocksAccordion = new Accordion();
+        blocksAccordion.getPanes().addAll(buildBlockPanes(lang, track, lessons));
+        if (!blocksAccordion.getPanes().isEmpty()) {
+            blocksAccordion.setExpandedPane(blocksAccordion.getPanes().get(0));
+        }
 
         var back = AppButton.ghost("← Назад", e -> nav.showTrackSelect());
 
@@ -89,23 +90,91 @@ public class LessonListView {
         });
         resume.setDisable(nav.resolveResumeLessonId(lang, track) == null);
 
-        var open = AppButton.primary("📘 Открыть", e -> {
-            Lesson sel = list.getSelectionModel().getSelectedItem();
-            if (sel != null && isUnlocked(lessons, sel)) {
-                nav.showLesson(sel.getId());
-            }
-        });
-
-        HBox actions = new HBox(12, back, resume, open);
+        HBox actions = new HBox(12, back, resume);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
         BorderPane pane = new BorderPane();
         pane.setPadding(new Insets(18));
         pane.setTop(new VBoxHeader(title, hint).view());
-        pane.setCenter(list);
+        pane.setCenter(blocksAccordion);
         pane.setBottom(actions);
         BorderPane.setMargin(actions, new Insets(12, 0, 0, 0));
         return pane;
+    }
+
+    private List<TitledPane> buildBlockPanes(CourseLanguage lang, CourseTrack track, List<Lesson> lessons) {
+        Map<String, VBox> grouped = new LinkedHashMap<>();
+        for (Lesson lesson : lessons) {
+            String blockName = blockForLesson(lang, track, lesson.getOrder());
+            grouped.computeIfAbsent(blockName, k -> new VBox(10));
+            grouped.get(blockName).getChildren().add(buildLessonPane(lessons, lesson));
+        }
+
+        return grouped.entrySet().stream()
+                .map(e -> {
+                    VBox content = e.getValue();
+                    content.setPadding(new Insets(8, 6, 8, 6));
+                    TitledPane pane = new TitledPane(e.getKey(), content);
+                    pane.setAnimated(false);
+                    return pane;
+                })
+                .toList();
+    }
+
+    private TitledPane buildLessonPane(List<Lesson> ordered, Lesson lesson) {
+        boolean unlocked = isUnlocked(ordered, lesson);
+        boolean done = nav.progress().isCompleted(lesson.getLanguage(), nav.selectedTrack(), lesson.getId());
+        String status = done ? "✅" : (unlocked ? "▶" : "🔒");
+
+        Label summary = new Label(summaryForLesson(lesson.getId()));
+        summary.getStyleClass().add("muted");
+        summary.setWrapText(true);
+
+        AppButton open = AppButton.primary("Открыть урок", e -> nav.showLesson(lesson.getId()));
+        open.setDisable(!unlocked && !done);
+
+        VBox lessonBox = new VBox(8, summary, open);
+        lessonBox.setPadding(new Insets(6, 0, 6, 0));
+
+        TitledPane pane = new TitledPane(status + "  " + lesson.getOrder() + ". " + lesson.getTitle(), lessonBox);
+        pane.setAnimated(false);
+        pane.setCollapsible(true);
+        return pane;
+    }
+
+    private String blockForLesson(CourseLanguage language, CourseTrack track, int order) {
+        if (track == CourseTrack.BEGINNER) {
+            return switch (order) {
+                case 1 -> "Знакомство. Переменные";
+                case 2 -> "Условия и ветвления";
+                default -> "Циклы, методы и базовая автоматизация";
+            };
+        }
+
+        if (language == CourseLanguage.JAVA) {
+            return switch (order) {
+                case 1 -> "Точность данных и время";
+                case 2 -> "Типобезопасность и generics";
+                default -> "Коллекции и функциональный стиль";
+            };
+        }
+
+        return switch (order) {
+            case 1 -> "Kotlin-модель данных для AQA";
+            case 2 -> "Null-safety и выразительные условия";
+            default -> "Коллекции, extension и DSL-подход";
+        };
+    }
+
+    private String summaryForLesson(String lessonId) {
+        return switch (lessonId) {
+            case "java-001", "kotlin-001", "kotlin-adv-001" -> "Разберём типы данных, переменные и типичные ошибки хранения данных в автотестах.";
+            case "java-002", "kotlin-002", "kotlin-adv-002" -> "Научимся строить условия и логические проверки так, чтобы тесты были читаемыми и предсказуемыми.";
+            case "java-003", "kotlin-003", "java-adv-003", "kotlin-adv-003" -> "Практика: управлять потоком проверок, работать с коллекциями и писать переиспользуемые методы/функции.";
+            case "java-adv-001" -> "Продвинутая работа с BigDecimal, временем и парсингом данных из API для борьбы с flaky-тестами.";
+            case "java-adv-002" -> "Поймём generics и безопасные приведения типов, чтобы избежать ClassCastException в runtime.";
+            default -> "Краткий обзор теории и практики урока с примерами, которые пригодятся в реальных AQA-задачах.";
+        };
     }
 
     private boolean isUnlocked(List<Lesson> ordered, Lesson lesson) {
@@ -114,42 +183,5 @@ public class LessonListView {
             if (!nav.progress().isCompleted(l.getLanguage(), nav.selectedTrack(), l.getId())) return false;
         }
         return true;
-    }
-
-    static class LessonCell extends ListCell<Lesson> {
-        private final Navigator nav;
-
-        private LessonCell(Navigator nav) {
-            this.nav = nav;
-        }
-
-        @Override
-        protected void updateItem(Lesson item, boolean empty) {
-            super.updateItem(item, empty);
-            if (empty || item == null) {
-                setText(null);
-                setDisable(false);
-                return;
-            }
-
-            List<Lesson> ordered = nav.lessonRepository().listByLanguageAndTrack(item.getLanguage(), nav.selectedTrack());
-            boolean unlocked = true;
-            for (Lesson l : ordered) {
-                if (l.getOrder() >= item.getOrder()) break;
-                if (!nav.progress().isCompleted(l.getLanguage(), nav.selectedTrack(), l.getId())) {
-                    unlocked = false;
-                    break;
-                }
-            }
-
-            boolean done = nav.progress().isCompleted(item.getLanguage(), nav.selectedTrack(), item.getId());
-
-            String status = done ? "✅" : (unlocked ? "▶" : "🔒");
-            setText(status + "  " + item.getOrder() + ". " + item.getTitle());
-            setWrapText(true);
-            setPadding(new Insets(0, 0, 10, 0));
-            setDisable(!unlocked && !done);
-            setOpacity((!unlocked && !done) ? 0.60 : 1.0);
-        }
     }
 }

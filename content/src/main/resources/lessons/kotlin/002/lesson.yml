@@ -1,0 +1,27 @@
+id: "kotlin-002"
+language: "KOTLIN"
+track: "BEGINNER"
+order: 2
+title: "Kotlin: условия, диапазоны и безопасные вызовы"
+theory:
+  markdown: "lessons/kotlin/002/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Как в Kotlin проверить, что статус в диапазоне 200..299?"
+      options:
+        - text: "status in 200..299"
+          correct: true
+          explanation: "in + диапазон — стандартная идиома Kotlin."
+        - text: "status == 200..299"
+          correct: false
+          explanation: "Нельзя сравнить Int с диапазоном через ==."
+    - text: "Что делает оператор ?:"
+      options:
+        - text: "Возвращает значение по умолчанию, если слева null"
+          correct: true
+          explanation: "Это Elvis-оператор для fallback-логики."
+        - text: "Преобразует String в Int"
+          correct: false
+          explanation: "Для этого используют toInt()/toIntOrNull()."
