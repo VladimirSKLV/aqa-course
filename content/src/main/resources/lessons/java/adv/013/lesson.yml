@@ -1,0 +1,22 @@
+id: "java-adv-013"
+language: "JAVA"
+track: "ADVANCED"
+order: 13
+title: "Подготовка к API-автоматизации"
+theory:
+  markdown: "lessons/java/adv/013/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Что лучше сделать до массового написания API-тестов?"
+      options:
+        - text: "Согласовать контракт, структуру тестов и конфигурацию окружений"
+          correct: true
+          explanation: "Это снижает хаос и количество нестабильных тестов."
+        - text: "Сразу писать только e2e сценарии без архитектуры"
+          correct: false
+          explanation: "Без базовой архитектуры поддержка быстро усложнится."
+        - text: "Игнорировать подготовку тестовых данных"
+          correct: false
+          explanation: "Без управления данными тесты становятся нестабильными."

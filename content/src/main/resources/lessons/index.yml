@@ -23,6 +23,11 @@ blocks:
       - path: "lessons/java/adv/006/lesson.yml"
       - path: "lessons/java/adv/007/lesson.yml"
       - path: "lessons/java/adv/008/lesson.yml"
+      - path: "lessons/java/adv/009/lesson.yml"
+      - path: "lessons/java/adv/010/lesson.yml"
+      - path: "lessons/java/adv/011/lesson.yml"
+      - path: "lessons/java/adv/012/lesson.yml"
+      - path: "lessons/java/adv/013/lesson.yml"
 
   - language: "KOTLIN"
     track: "BEGINNER"

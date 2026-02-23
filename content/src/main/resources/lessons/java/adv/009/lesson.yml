@@ -1,0 +1,22 @@
+id: "java-adv-009"
+language: "JAVA"
+track: "ADVANCED"
+order: 9
+title: "Gradle/Maven в AQA-проекте"
+theory:
+  markdown: "lessons/java/adv/009/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Какая команда обычно запускает тесты в Gradle-проекте?"
+      options:
+        - text: "./gradlew test"
+          correct: true
+          explanation: "Стандартная команда для запуска тестов через Gradle Wrapper."
+        - text: "gradle deploy-only"
+          correct: false
+          explanation: "Это не стандартная команда для запуска тестов."
+        - text: "java MainTest"
+          correct: false
+          explanation: "Тесты запускаются тестовым раннером, а не напрямую main."

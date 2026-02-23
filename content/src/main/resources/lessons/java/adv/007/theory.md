@@ -1,26 +1,24 @@
-# Блок API: отдельный стек на Rest Assured
+# Урок 7. Циклы, параметризованные тесты и аннотации
 
-## Урок 1. База Rest Assured
-- GET/POST/PUT/DELETE.
-- Проверка кода, заголовков, JSON-path.
+Когда логика одна, а набор входных данных разный, используйте параметризованные тесты.
 
-## Урок 2. Данные и параметризация
-- Path/query/body параметры.
-- Data providers и фабрики тестовых данных.
+```java
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-## Урок 3. Состояние и изоляция
-- Объекты с внутренним состоянием.
-- Очистка данных и независимость тестов.
+class PasswordValidatorTest {
+    @ParameterizedTest
+    @CsvSource({"qwerty,false", "Qwerty123,true"})
+    void shouldValidatePassword(String password, boolean expected) {
+        boolean actual = password.length() >= 8 && password.matches(".*\\d.*");
+        assertTrue(actual == expected);
+    }
+}
+```
 
-## Урок 4. Исключения и негатив
-- 4xx/5xx сценарии.
-- Проверка тела ошибок и кодов.
+Полезные аннотации жизненного цикла:
+- `@BeforeEach` — подготовка данных перед каждым тестом;
+- `@AfterEach` — очистка после теста.
 
-## Урок 5. Интеграция с приложением
-- Кнопка в приложении: отправить тестовый запрос на открытый тренажёр.
-- Возможность подменить `baseUrl` на свой API.
-
-## Домашнее задание
-1. Написать 12 API-тестов (CRUD + негативные кейсы).
-2. Добавить запуск через `-DbaseUrl=...`.
-3. Подготовить smoke-suite для публичного онлайн-тренажёра.
+Цель: меньше дублирования, больше читаемости.

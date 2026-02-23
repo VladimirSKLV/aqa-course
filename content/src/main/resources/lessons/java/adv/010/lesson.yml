@@ -1,0 +1,22 @@
+id: "java-adv-010"
+language: "JAVA"
+track: "ADVANCED"
+order: 10
+title: "Конфигурация BaseUrl"
+theory:
+  markdown: "lessons/java/adv/010/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Зачем параметризовать baseUrl?"
+      options:
+        - text: "Чтобы запускать те же тесты на разных окружениях без изменений кода"
+          correct: true
+          explanation: "Это повышает гибкость и уменьшает ручные правки."
+        - text: "Чтобы отключить все проверки"
+          correct: false
+          explanation: "Параметризация не отключает тестовую логику."
+        - text: "Чтобы тесты работали только локально"
+          correct: false
+          explanation: "Наоборот — это нужно и для CI, и для удалённых стендов."
