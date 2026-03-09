@@ -106,15 +106,30 @@ public class SandboxView {
         JavaSandboxRunner runner = new JavaSandboxRunner();
         JunitAutotestRunner autotestRunner = new JunitAutotestRunner();
 
-        TextField baseUrl = new TextField("https://jsonplaceholder.typicode.com");
+        ComboBox<JunitAutotestRunner.ApiTarget> apiTarget = new ComboBox<>();
+        apiTarget.getStyleClass().add("app-combo");
+        apiTarget.getItems().addAll(autotestRunner.apiTargets());
+        apiTarget.getSelectionModel().selectFirst();
+
+        JunitAutotestRunner.ApiTarget selected = apiTarget.getValue();
+        TextField baseUrl = new TextField(selected == null ? "https://jsonplaceholder.typicode.com" : selected.baseUrl());
         baseUrl.getStyleClass().add("app-input");
         baseUrl.setPromptText("https://your-trainer.example");
 
-        TextField endpoint = new TextField("/posts/1");
+        TextField endpoint = new TextField(selected == null ? "/" : selected.defaultEndpoint());
         endpoint.getStyleClass().add("app-input");
         endpoint.setPromptText("/api/path");
 
         Label testStatus = new Label("Укажите baseUrl и запускайте API/Web smoke-тесты из приложения.");
+
+        apiTarget.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue == null) return;
+            baseUrl.setText(newValue.baseUrl());
+            endpoint.setText(newValue.defaultEndpoint());
+            testStatus.getStyleClass().removeAll("error", "success");
+            if (!testStatus.getStyleClass().contains("muted")) testStatus.getStyleClass().add("muted");
+            testStatus.setText("Выбран тренажёр: " + newValue.title() + ". Можно запускать API suite.");
+        });
         testStatus.getStyleClass().addAll("status-bar", "muted");
         testStatus.setWrapText(true);
 
@@ -263,6 +278,9 @@ public class SandboxView {
         HBox actions = new HBox(12, back, reset, clear, run);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
+        HBox targetRow = new HBox(10, new Label("Тестовый сайт:"), apiTarget);
+        HBox.setHgrow(apiTarget, Priority.ALWAYS);
+
         HBox baseUrlRow = new HBox(10, new Label("BaseUrl:"), baseUrl);
         HBox.setHgrow(baseUrl, Priority.ALWAYS);
         HBox endpointRow = new HBox(10, new Label("Endpoint:"), endpoint);
@@ -271,8 +289,12 @@ public class SandboxView {
         HBox testActions = new HBox(10, probe, runApi, runWeb);
         testActions.setAlignment(Pos.CENTER_RIGHT);
 
-        VBox autotestBox = new VBox(10, baseUrlRow, endpointRow, testStatus, testActions);
-        AppPanel autotestPanel = new AppPanel(new Label("Автотесты и тестовый API-запрос"), autotestBox);
+        Label targetsHint = new Label("Рекомендованные сайты: JSONPlaceholder, ReqRes, HttpBin. Вы можете ввести любой свой baseUrl.");
+        targetsHint.getStyleClass().add("muted");
+        targetsHint.setWrapText(true);
+
+        VBox autotestBox = new VBox(10, targetRow, baseUrlRow, endpointRow, targetsHint, testStatus, testActions);
+        AppPanel autotestPanel = new AppPanel(new Label("Новый раздел: тестирование API и smoke-автотесты"), autotestBox);
 
         SplitPane split = new SplitPane();
         split.setOrientation(Orientation.VERTICAL);

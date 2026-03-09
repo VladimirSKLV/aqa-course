@@ -1,0 +1,33 @@
+id: "kotlin-adv-006"
+language: "KOTLIN"
+track: "ADVANCED"
+order: 6
+title: "DSL и builder-подход для читаемых автотестов"
+theory:
+  markdown: "lessons/kotlin/adv/006/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Почему API-слой стоит выделять в отдельный раздел тестирования?"
+      options:
+        - text: "Чтобы иметь независимую архитектуру, проверки и запуск"
+          correct: true
+          explanation: "Это уменьшает связность и ускоряет диагностику проблем."
+        - text: "Чтобы отказаться от UI-тестов"
+          correct: false
+          explanation: "UI и API покрывают разные риски и нужны вместе."
+        - text: "Потому что API всегда стабильнее"
+          correct: false
+          explanation: "Любой слой может быть нестабильным без правильного подхода."
+    - text: "Что самое важное при запуске API suite из приложения?"
+      options:
+        - text: "Выбор целевого тестового сайта, прозрачный отчёт и повторяемость"
+          correct: true
+          explanation: "Запуск должен быть удобным и детерминированным для команды."
+        - text: "Скрыть детали выполнения"
+          correct: false
+          explanation: "Прозрачность отчёта помогает дебажить падения."
+        - text: "Сделать только ручной режим"
+          correct: false
+          explanation: "Нужны и ручной запуск, и автоматизация."

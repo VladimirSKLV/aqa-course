@@ -26,7 +26,7 @@ public class WelcomeView {
         title.setAlignment(Pos.CENTER);
         title.setMaxWidth(Double.MAX_VALUE);
 
-        Label subtitle = new Label("Выберите язык и уровень. Уроки открываются последовательно. Есть песочница для экспериментов с кодом.");
+        Label subtitle = new Label("Выберите язык и уровень. Уроки открываются последовательно. Есть песочница и отдельный раздел API smoke-тестирования.");
         subtitle.getStyleClass().add("muted");
         subtitle.setWrapText(true);
         subtitle.setTextAlignment(TextAlignment.CENTER);
@@ -47,7 +47,7 @@ public class WelcomeView {
             nav.showTrackSelect();
         });
 
-        var sandbox = AppButton.secondary("🧪 Песочница", e -> nav.showSandbox());
+        var sandbox = AppButton.secondary("🧪 Песочница + API тестирование", e -> nav.showSandbox());
 
         HBox langRow = new HBox(12, javaBtn, kotlinBtn);
         langRow.setAlignment(Pos.CENTER);
