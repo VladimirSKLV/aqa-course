@@ -40,6 +40,10 @@ blocks:
       - path: "lessons/kotlin/002/lesson.yml"
       - path: "lessons/kotlin/003/lesson.yml"
       - path: "lessons/kotlin/004/lesson.yml"
+      - path: "lessons/kotlin/005/lesson.yml"
+      - path: "lessons/kotlin/006/lesson.yml"
+      - path: "lessons/kotlin/007/lesson.yml"
+      - path: "lessons/kotlin/008/lesson.yml"
 
   - language: "KOTLIN"
     track: "ADVANCED"
@@ -48,3 +52,7 @@ blocks:
       - path: "lessons/kotlin/adv/002/lesson.yml"
       - path: "lessons/kotlin/adv/003/lesson.yml"
       - path: "lessons/kotlin/adv/004/lesson.yml"
+      - path: "lessons/kotlin/adv/005/lesson.yml"
+      - path: "lessons/kotlin/adv/006/lesson.yml"
+      - path: "lessons/kotlin/adv/007/lesson.yml"
+      - path: "lessons/kotlin/adv/008/lesson.yml"

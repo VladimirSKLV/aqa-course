@@ -1,7 +1,7 @@
 package ru.vlsklv.course.app.autotest;
 
-import java.io.IOException;
 import java.awt.Desktop;
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -12,6 +12,32 @@ import java.util.List;
 
 public class JunitAutotestRunner {
     public enum SuiteType { API, WEB }
+
+    public List<ApiTarget> apiTargets() {
+        return List.of(
+                new ApiTarget(
+                        "jsonplaceholder",
+                        "JSONPlaceholder",
+                        "https://jsonplaceholder.typicode.com",
+                        "/posts/1",
+                        "Публичный REST-тренажёр с постами/комментариями"
+                ),
+                new ApiTarget(
+                        "reqres",
+                        "ReqRes",
+                        "https://reqres.in",
+                        "/api/users/2",
+                        "Тренажёр пользовательских эндпоинтов и негативных ответов"
+                ),
+                new ApiTarget(
+                        "httpbin",
+                        "HttpBin",
+                        "https://httpbin.org",
+                        "/get",
+                        "Сервис для отладки HTTP-запросов и заголовков"
+                )
+        );
+    }
 
     public RunSummary runSuite(SuiteType suiteType, String baseUrl) {
         String normalizedBaseUrl = normalizeBaseUrl(baseUrl);
@@ -75,11 +101,67 @@ public class JunitAutotestRunner {
     }
 
     private List<TestCase> apiCases(String baseUrl) {
+        if (baseUrl.contains("jsonplaceholder.typicode.com")) {
+            return List.of(
+                    new TestCase("GET /posts/1 возвращает id=1", () -> {
+                        HttpResponse<String> response = get(baseUrl + "/posts/1");
+                        assertTrue(response.statusCode() == 200, "Ожидается HTTP 200");
+                        assertTrue(response.body().contains("\"id\": 1") || response.body().contains("\"id\":1"), "Ожидается id=1");
+                    }),
+                    new TestCase("GET /users возвращает массив пользователей", () -> {
+                        HttpResponse<String> response = get(baseUrl + "/users");
+                        assertTrue(response.statusCode() == 200, "Ожидается HTTP 200");
+                        assertTrue(response.body().startsWith("["), "Ожидается JSON-массив");
+                    }),
+                    new TestCase("Негативный endpoint возвращает 4xx/5xx", () -> {
+                        HttpResponse<String> response = get(baseUrl + "/this-endpoint-should-not-exist");
+                        assertTrue(response.statusCode() >= 400, "Негативный кейс должен вернуть 4xx/5xx");
+                    })
+            );
+        }
+
+        if (baseUrl.contains("reqres.in")) {
+            return List.of(
+                    new TestCase("GET /api/users/2 возвращает 200 и data", () -> {
+                        HttpResponse<String> response = get(baseUrl + "/api/users/2");
+                        assertTrue(response.statusCode() == 200, "Ожидается HTTP 200");
+                        assertTrue(response.body().contains("\"data\""), "Ожидается объект data");
+                    }),
+                    new TestCase("GET /api/users/23 возвращает 404", () -> {
+                        HttpResponse<String> response = get(baseUrl + "/api/users/23");
+                        assertTrue(response.statusCode() == 404, "Ожидается HTTP 404");
+                    }),
+                    new TestCase("GET /api/unknown возвращает список ресурсов", () -> {
+                        HttpResponse<String> response = get(baseUrl + "/api/unknown");
+                        assertTrue(response.statusCode() == 200, "Ожидается HTTP 200");
+                        assertTrue(response.body().contains("\"data\""), "Ожидается поле data");
+                    })
+            );
+        }
+
+        if (baseUrl.contains("httpbin.org")) {
+            return List.of(
+                    new TestCase("GET /get возвращает 200", () -> {
+                        HttpResponse<String> response = get(baseUrl + "/get");
+                        assertTrue(response.statusCode() == 200, "Ожидается HTTP 200");
+                        assertTrue(response.body().contains("\"url\""), "Ожидается поле url");
+                    }),
+                    new TestCase("GET /status/418 возвращает 418", () -> {
+                        HttpResponse<String> response = get(baseUrl + "/status/418");
+                        assertTrue(response.statusCode() == 418, "Ожидается HTTP 418");
+                    }),
+                    new TestCase("GET /json возвращает JSON", () -> {
+                        HttpResponse<String> response = get(baseUrl + "/json");
+                        assertTrue(response.statusCode() == 200, "Ожидается HTTP 200");
+                        assertTrue(response.body().contains("slideshow"), "Ожидается JSON-структура slideshow");
+                    })
+            );
+        }
+
         return List.of(
-                new TestCase("GET /posts/1 возвращает 2xx", () -> {
-                    HttpResponse<String> response = get(baseUrl + "/posts/1");
-                    assertTrue(response.statusCode() >= 200 && response.statusCode() < 300, "HTTP код должен быть 2xx");
-                    assertTrue(response.body().contains("id"), "В ответе ожидается поле id");
+                new TestCase("GET / должен вернуть 2xx/3xx", () -> {
+                    HttpResponse<String> response = get(baseUrl + "/");
+                    assertTrue(response.statusCode() >= 200 && response.statusCode() < 400, "Ожидается HTTP 2xx/3xx");
                 }),
                 new TestCase("Негативный endpoint возвращает 4xx/5xx", () -> {
                     HttpResponse<String> response = get(baseUrl + "/this-endpoint-should-not-exist");
@@ -144,6 +226,13 @@ public class JunitAutotestRunner {
     private record TestCase(String name, CheckedRunnable execute) {}
     @FunctionalInterface
     private interface CheckedRunnable { void run() throws Exception; }
+
+    public record ApiTarget(String id, String title, String baseUrl, String defaultEndpoint, String description) {
+        @Override
+        public String toString() {
+            return title + " — " + baseUrl;
+        }
+    }
 
     public record RunSummary(boolean success, String details) {
         public static RunSummary fail(String message) { return new RunSummary(false, message); }

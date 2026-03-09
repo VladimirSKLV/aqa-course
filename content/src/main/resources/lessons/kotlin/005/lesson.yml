@@ -1,0 +1,33 @@
+id: "kotlin-005"
+language: "KOTLIN"
+track: "BEGINNER"
+order: 5
+title: "Коллекции и лямбды для проверок API-ответов"
+theory:
+  markdown: "lessons/kotlin/005/theory.md"
+assignment:
+  type: "quiz"
+  passPercent: 80
+  questions:
+    - text: "Что даёт детализация проверок в Kotlin-коллекциях для AQA?"
+      options:
+        - text: "Позволяет точно фильтровать и валидировать данные из API"
+          correct: true
+          explanation: "Чем точнее фильтрация и ассерты, тем меньше ложных срабатываний тестов."
+        - text: "Ускоряет интернет"
+          correct: false
+          explanation: "Скорость сети не зависит от коллекций."
+        - text: "Полностью заменяет логи"
+          correct: false
+          explanation: "Логи всё равно нужны для диагностики."
+    - text: "Зачем выносить конфигурацию baseUrl/token в отдельный слой?"
+      options:
+        - text: "Чтобы переключать стенды без переписывания тестов"
+          correct: true
+          explanation: "Это основа поддержки нескольких окружений."
+        - text: "Чтобы отключить проверки"
+          correct: false
+          explanation: "Конфигурация не заменяет тестовую логику."
+        - text: "Только ради красоты проекта"
+          correct: false
+          explanation: "Главная цель — управляемость и масштабируемость."
